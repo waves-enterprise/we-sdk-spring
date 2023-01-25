@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.wavesenterprise.sdk.spring.contract.client.ContractClientConfiguration

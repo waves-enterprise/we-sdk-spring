@@ -19,6 +19,7 @@ val ioGrpcKotlinVersion: String by project
 val protobufVersion: String by project
 
 val junitPlatformLauncherVersion: String by project
+val junitBom: String by project
 val mockkVersion: String by project
 val springMockkVersion: String by project
 val wireMockVersion: String by project
@@ -34,11 +35,13 @@ val sonaTypeMavenPassword: String? by project
 val weMavenBasePath = "https://artifacts.wavesenterprise.com/repository/"
 
 val sonaTypeBasePath = "https://s01.oss.sonatype.org"
-val gitHubProject = "waves-enterprise/we-node-client"
+val gitHubProject = "waves-enterprise/we-spring-sdk"
 val githubUrl = "https://github.com/$gitHubProject"
 
 val feignVersion: String by project
 val jacksonModuleKotlin: String by project
+
+val weNodeClientVersion: String by project
 
 plugins {
     kotlin("jvm") apply false
@@ -76,7 +79,19 @@ allprojects {
 
     repositories {
         mavenCentral()
-        mavenLocal()
+        if (weMavenUser != null && weMavenPassword != null) {
+            maven {
+                name = "we-snapshots"
+                url = uri("https://artifacts.wavesenterprise.com/repository/maven-snapshots/")
+                mavenContent {
+                    snapshotsOnly()
+                }
+                credentials {
+                    username = weMavenUser
+                    password = weMavenPassword
+                }
+            }
+        }
     }
 }
 
@@ -194,7 +209,7 @@ subprojects {
                     packaging = "jar"
                     name.set(project.name)
                     url.set(githubUrl)
-                    description.set("WE Node Client for Java/Kotlin")
+                    description.set("WE starter for Java/Kotlin")
 
                     licenses {
                         license {
@@ -241,8 +256,12 @@ subprojects {
             mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion") {
                 bomProperty("kotlin.version", kotlinVersion)
             }
+            mavenBom("org.junit:junit-bom:$junitBom")
         }
         dependencies {
+            dependency("com.wavesenterprise:we-node-client-grpc-blocking-client:$weNodeClientVersion")
+            dependency("com.wavesenterprise:we-node-client-feign-client:$weNodeClientVersion")
+
             dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinCoroutinesVersion")
             dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlinCoroutinesVersion")
             dependency("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$kotlinCoroutinesVersion")

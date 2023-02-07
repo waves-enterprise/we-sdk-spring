@@ -37,6 +37,7 @@ pluginManagement {
 rootProject.name = "we-sdk-spring"
 
 include(
-    "we-contract-client-starter",
-    "we-node-client-starter"
+    "we-autoconfigure",
+    "we-starters:we-starter-contract-client",
+    "we-starters:we-starter-node-client"
 )

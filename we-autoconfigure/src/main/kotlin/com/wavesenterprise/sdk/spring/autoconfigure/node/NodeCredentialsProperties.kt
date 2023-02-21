@@ -6,5 +6,5 @@ import org.springframework.boot.context.properties.ConstructorBinding
 @ConstructorBinding
 @ConfigurationProperties(prefix = "node.credentials-provider")
 data class NodeCredentialsProperties(
-    var addresses: Map<String, String> = mutableMapOf(),
+    var addresses: Map<String, String?> = mutableMapOf(),
 )

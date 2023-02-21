@@ -9,6 +9,7 @@ import com.wavesenterprise.sdk.node.client.blocking.node.NodeInfoService
 import com.wavesenterprise.sdk.node.client.blocking.privacy.PrivacyService
 import com.wavesenterprise.sdk.node.client.blocking.tx.TxService
 import com.wavesenterprise.sdk.node.domain.Address
+import com.wavesenterprise.sdk.node.domain.Password
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.autoconfigure.AutoConfigurations
@@ -44,7 +45,7 @@ class NodeClientAutoConfigurationTest {
                 val passwordFromContext = context
                     .getBean(NodeCredentialsProvider::class.java)
                     .getPassword(Address.fromBase58(nodeOwnerAddress))
-                assertThat(passwordFromContext).isEqualTo(keyStorePassword)
+                assertThat(passwordFromContext).isEqualTo(Password(keyStorePassword))
             }
     }
 
@@ -83,7 +84,7 @@ class NodeClientAutoConfigurationTest {
                 assertThat(context).hasSingleBean(NodeCredentialsProvider::class.java)
                 val passwordFromContext = context.getBean(NodeCredentialsProvider::class.java)
                     .getPassword(Address.fromBase58(nodeOwnerAddress))
-                assertThat(passwordFromContext).isEqualTo(keyStorePassword)
+                assertThat(passwordFromContext).isEqualTo(Password(keyStorePassword))
             }
     }
 

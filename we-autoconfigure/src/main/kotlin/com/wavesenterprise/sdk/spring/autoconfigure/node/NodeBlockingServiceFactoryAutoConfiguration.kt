@@ -12,6 +12,7 @@ import com.wavesenterprise.sdk.node.client.blocking.ratelimit.UtxPoolSizeLimitin
 import com.wavesenterprise.sdk.node.client.feign.FeignNodeClientParams
 import com.wavesenterprise.sdk.node.client.feign.factory.FeignNodeServiceFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -34,6 +35,7 @@ import org.springframework.context.annotation.Import
 class NodeBlockingServiceFactoryAutoConfiguration {
 
     @Bean
+    @ConditionalOnMissingBean
     fun nodeBlockingServiceFactory(
         nodeProperties: NodeProperties,
         cacheProperties: CacheProperties,
@@ -78,26 +80,32 @@ class NodeBlockingServiceFactoryAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnMissingBean
     fun addressService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
         nodeBlockingServiceFactory.addressService()
 
     @Bean
+    @ConditionalOnMissingBean
     fun blocksService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
         nodeBlockingServiceFactory.blocksService()
 
     @Bean
+    @ConditionalOnMissingBean
     fun contractService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
         nodeBlockingServiceFactory.contractService()
 
     @Bean
+    @ConditionalOnMissingBean
     fun nodeInfoService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
         nodeBlockingServiceFactory.nodeInfoService()
 
     @Bean
+    @ConditionalOnMissingBean
     fun privacyService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
         nodeBlockingServiceFactory.privacyService()
 
     @Bean
+    @ConditionalOnMissingBean
     fun txService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
         nodeBlockingServiceFactory.txService()
 }

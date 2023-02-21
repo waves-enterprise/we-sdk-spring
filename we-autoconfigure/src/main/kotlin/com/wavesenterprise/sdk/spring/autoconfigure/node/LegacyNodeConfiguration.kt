@@ -3,6 +3,7 @@ package com.wavesenterprise.sdk.spring.autoconfigure.node
 import com.wavesenterprise.sdk.node.client.blocking.credentials.DefaultNodeCredentialsProvider
 import com.wavesenterprise.sdk.node.client.blocking.credentials.NodeCredentialsProvider
 import com.wavesenterprise.sdk.node.domain.Address
+import com.wavesenterprise.sdk.node.domain.Password
 import com.wavesenterprise.sdk.spring.autoconfigure.node.legacy.LegacyNodeConfigurationProperties
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.boot.context.properties.EnableConfigurationProperties
@@ -23,7 +24,10 @@ class LegacyNodeConfiguration {
         DefaultNodeCredentialsProvider(
             credentialsMap = legacyNodeConfigurationProperties.getConfigForUsage()
                 .filter { it.value.nodeOwnerAddress != null }
-                .map { Address.fromBase58(it.value.nodeOwnerAddress!!) to (it.value.keyStorePassword ?: "") }.toMap()
+                .map { entry ->
+                    Address.fromBase58(entry.value.nodeOwnerAddress!!) to
+                        entry.value.keyStorePassword?.let { Password(it) }
+                }.toMap()
         )
 
     @Bean

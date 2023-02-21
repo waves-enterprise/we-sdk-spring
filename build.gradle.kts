@@ -5,26 +5,16 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val kotlinVersion: String by project
-val kotlinCoroutinesVersion: String by project
-val reactorVersion: String by project
 val springBootVersion: String by project
 val springCloudVersion: String by project
 val jacocoToolVersion: String by project
 val logbackVersion: String by project
 val javaxAnnotationApiVersion: String by project
-val caffeineCacheVersion: String by project
-
-val ioGrpcVersion: String by project
-val ioGrpcKotlinVersion: String by project
-val protobufVersion: String by project
 
 val junitPlatformLauncherVersion: String by project
 val junitBom: String by project
 val mockkVersion: String by project
 val springMockkVersion: String by project
-val wireMockVersion: String by project
-
-val ktorVersion: String by project
 
 val weMavenUser: String? by project
 val weMavenPassword: String? by project
@@ -42,6 +32,7 @@ val feignVersion: String by project
 val jacksonModuleKotlin: String by project
 
 val weNodeClientVersion: String by project
+val weContractSdkVersion: String by project
 
 plugins {
     kotlin("jvm") apply false
@@ -79,6 +70,7 @@ allprojects {
 
     repositories {
         mavenCentral()
+        mavenLocal()
         if (weMavenUser != null && weMavenPassword != null) {
             maven {
                 name = "we-snapshots"
@@ -261,41 +253,20 @@ subprojects {
         dependencies {
             dependency("com.wavesenterprise:we-node-client-grpc-blocking-client:$weNodeClientVersion")
             dependency("com.wavesenterprise:we-node-client-feign-client:$weNodeClientVersion")
-
-            dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinCoroutinesVersion")
-            dependency("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$kotlinCoroutinesVersion")
-            dependency("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:$kotlinCoroutinesVersion")
+            dependency("com.wavesenterprise:we-tx-signer-node:$weNodeClientVersion")
+            dependency("com.wavesenterprise:we-contract-sdk-blocking-client:$weContractSdkVersion")
 
             dependency("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
 
-            dependency("io.projectreactor:reactor-core:$reactorVersion")
-
-            dependency("com.google.protobuf:protobuf-java:$protobufVersion")
-            dependency("io.grpc:grpc-core:$ioGrpcVersion")
-            dependency("io.grpc:grpc-stub:$ioGrpcVersion")
-            dependency("io.grpc:grpc-netty:$ioGrpcVersion")
-            dependency("io.grpc:grpc-protobuf:$ioGrpcVersion")
-
-            dependency("com.google.protobuf:protobuf-kotlin:$protobufVersion")
-            dependency("io.grpc:grpc-kotlin-stub:$ioGrpcKotlinVersion")
-
             dependency("ch.qos.logback:logback-classic:$logbackVersion")
-
-            dependency("io.ktor:ktor-client-core:$ktorVersion")
-            dependency("io.ktor:ktor-client-cio:$ktorVersion")
-            dependency("io.ktor:ktor-client-logging:$ktorVersion")
-            dependency("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-            dependency("io.ktor:ktor-serialization-jackson:$ktorVersion")
 
             dependency("io.github.openfeign:feign-core:$feignVersion")
             dependency("io.github.openfeign:feign-jackson:$feignVersion")
             dependency("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleKotlin")
-            dependency("com.github.ben-manes.caffeine:caffeine:$caffeineCacheVersion")
 
             dependency("org.junit.platform:junit-platform-launcher:$junitPlatformLauncherVersion")
             dependency("io.mockk:mockk:$mockkVersion")
             dependency("com.ninja-squad:springmockk:$springMockkVersion")
-            dependency("com.github.tomakehurst:wiremock-jre8:$wireMockVersion")
         }
     }
 

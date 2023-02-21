@@ -7,7 +7,6 @@ pluginManagement {
     val gitPropertiesVersion: String by settings
     val palantirGitVersion: String by settings
     val jGitVerVersion: String by settings
-    val protobufPluginVersion: String by settings
     val dokkaVersion: String by settings
     val nexusStagingVersion: String by settings
 
@@ -23,7 +22,6 @@ pluginManagement {
         id("com.gorylenko.gradle-git-properties") version gitPropertiesVersion apply false
         id("jacoco")
         id("fr.brouillard.oss.gradle.jgitver") version jGitVerVersion
-        id("com.google.protobuf") version protobufPluginVersion apply false
         id("org.jetbrains.dokka") version dokkaVersion
         id("io.codearte.nexus-staging") version nexusStagingVersion
     }

@@ -1,9 +1,9 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.contract
 
 import com.wavesenterprise.sdk.node.domain.Fee
-import com.wavesenterprise.sdk.node.domain.Hash
 import com.wavesenterprise.sdk.node.domain.contract.ContractId
 import com.wavesenterprise.sdk.node.domain.contract.ContractImage
+import com.wavesenterprise.sdk.node.domain.contract.ContractImageHash
 import com.wavesenterprise.sdk.node.domain.contract.ContractName
 import com.wavesenterprise.sdk.node.domain.contract.ContractVersion
 import com.wavesenterprise.sdk.node.domain.sign.builder.ContractSignRequestBuilder
@@ -15,8 +15,8 @@ class ContractConfigurationPropertiesForSignRequestBuilderFactory(
     private val applicationContext: ApplicationContext,
 ) : ContractSignRequestBuilderFactory {
 
-    private val contractsConfigurationProperties: ContractsConfigurationProperties by lazy {
-        applicationContext.getBean(ContractsConfigurationProperties::class.java)
+    private val contractsConfigurationProperties: ContractsProperties by lazy {
+        applicationContext.getBean(ContractsProperties::class.java)
     }
 
     override fun create(): ContractSignRequestBuilder =
@@ -36,7 +36,7 @@ class ContractConfigurationPropertiesForSignRequestBuilderFactory(
                     contractVersion(ContractVersion(it))
                 }
                 imageHash?.let {
-                    imageHash(Hash.fromHexString(it))
+                    imageHash(ContractImageHash(it))
                 }
                 apply {
                     applicationContext

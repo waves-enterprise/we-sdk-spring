@@ -1,24 +1,22 @@
 contracts:
   config:
     test-one:
-      contractVersion: 1
       contractId: DP5MggKC8GJuLZshCVNSYwBtE6WTRtMM1YPPdcmwbuNg
       fee: 0
       version: 1
       image: test-one
-      imageHash: 3f4f83fc8ba870f6c5e238de1fe57eb4d6cf37db301faeda4f51b608ab231397
+      imageHash: test-one-image-hash
+      autoUpdate:
+        enabled: false
+        contractCreatorAddress: 4L4XEpNpesX9r6rVJ8hW1TrMiNCZ6SMvRuWPKB7T47wKfnp4D84XBUv7xsa36CGwoyK3fzfojivwonHNrsX2fLBL
     test-two:
-      contractVersion: 1
       contractId: R7uNKpHpTvp3GfN8WtY22TiUSCoBFSFcPCLtgrmWLP1
       fee: 0
       version: 1
       image: test-two
-      imageHash: 2ec57b19e038a47e1943178054d9561b0a31809fcfaba71dcba876c0f24dfe91
-
-node:
-  config:
-    test-node:
-      http:
-        url: http://localhost
+      imageHash: test-two-image-hash
+      autoUpdate:
+        enabled: false
+        contractCreatorAddress: 4L4XEpNpesX9r6rVJ8hW1TrMiNCZ6SMvRuWPKB7T47wKfnp4D84XBUv7xsa36CGwoyK3fzfojivwonHNrsX2fLBL
 
 debug: true

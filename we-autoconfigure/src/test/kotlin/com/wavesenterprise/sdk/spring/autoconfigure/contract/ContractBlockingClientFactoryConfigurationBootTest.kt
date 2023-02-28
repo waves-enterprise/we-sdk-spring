@@ -15,6 +15,7 @@ import com.wavesenterprise.sdk.node.domain.DataSize
 import com.wavesenterprise.sdk.node.domain.DataValue
 import com.wavesenterprise.sdk.node.domain.Fee
 import com.wavesenterprise.sdk.node.domain.TxCount
+import com.wavesenterprise.sdk.node.domain.contract.ContractId
 import com.wavesenterprise.sdk.node.domain.contract.ContractImage
 import com.wavesenterprise.sdk.node.domain.contract.ContractImageHash
 import com.wavesenterprise.sdk.node.domain.contract.ContractName
@@ -26,6 +27,7 @@ import com.wavesenterprise.sdk.node.test.data.TestDataFactory.Companion.callCont
 import com.wavesenterprise.sdk.spring.autoconfigure.TestApplication
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.annotation.Contract
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.annotation.EnableContracts
+import com.wavesenterprise.sdk.spring.autoconfigure.contractInfo
 import com.wavesenterprise.sdk.tx.signer.TxSigner
 import com.wavesenterprise.sdk.tx.signer.node.factory.TxServiceTxSignerFactory
 import io.mockk.every
@@ -41,6 +43,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.Bean
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.context.ContextConfiguration
+import java.util.Optional
 
 @SpringBootTest(classes = [TestApplication::class])
 @ExtendWith(MockKExtension::class)
@@ -65,8 +68,12 @@ class ContractBlockingClientFactoryConfigurationBootTest {
     @Autowired
     lateinit var txSigner: TxSigner
 
+    @Autowired
+    lateinit var contractService: ContractService
+
     @BeforeEach
     fun init() {
+        every { contractService.getContractInfo(any()) } returns Optional.of(contractInfo())
         every { txService.broadcast(any()) } returns callContractTx()
         every { txService.utxInfo() } returns UtxSize(TxCount(10), DataSize(1))
     }
@@ -98,6 +105,24 @@ class ContractBlockingClientFactoryConfigurationBootTest {
         }
         signRequestCapture.captured.apply {
             assertThat(this.contractId.asBase58String()).isEqualTo(expectedContractId)
+        }
+    }
+
+    @Test
+    fun `should use contract version customizer`() {
+        val expectedContractId = "DP5MggKC8GJuLZshCVNSYwBtE6WTRtMM1YPPdcmwbuNg"
+        val signRequestCapture = slot<CallContractSignRequest>()
+        val contractInfo = contractInfo(version = 10)
+        every { txSigner.sign(capture(signRequestCapture)) } returns callContractTx()
+        every {
+            contractService.getContractInfo(ContractId.fromBase58(expectedContractId))
+        } returns Optional.of(contractInfo)
+
+        testOne.executeContract { contract ->
+            contract.call("test")
+        }
+        signRequestCapture.captured.apply {
+            assertThat(this.contractVersion).isEqualTo(contractInfo.version)
         }
     }
 

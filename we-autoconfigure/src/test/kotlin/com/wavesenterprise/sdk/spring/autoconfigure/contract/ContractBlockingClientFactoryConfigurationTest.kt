@@ -34,7 +34,7 @@ class ContractBlockingClientFactoryConfigurationTest {
     @Test
     fun `should create contract client for two contracts and other necessary beans`() {
         applicationContextRunner
-            .withUserConfiguration(TestConfiguration::class.java)
+            .withUserConfiguration(JacksonModuleConfiguration::class.java)
             .run { context ->
                 assertThat(context).hasNotFailed()
                 assertThat(context).hasSingleBean(NodeBlockingServiceFactory::class.java)
@@ -54,7 +54,7 @@ class ContractBlockingClientFactoryConfigurationTest {
     @Test
     fun `should throw exception when call contract which not configured by ContractSignRequestBuilder`() {
         applicationContextRunner
-            .withUserConfiguration(TestConfiguration::class.java)
+            .withUserConfiguration(JacksonModuleConfiguration::class.java)
             .run { context ->
                 val contractName = "testOne"
                 val contractClient = context.getBean(contractName) as ContractBlockingClientFactory<*>
@@ -66,6 +66,16 @@ class ContractBlockingClientFactoryConfigurationTest {
                     assertThat(ex.message)
                         .isEqualTo("Couldn't find contract config for contract with name = '$contractName'")
                 }
+            }
+    }
+
+    @Test
+    fun `should map legacy config and start with legacy mode`() {
+        applicationContextRunner
+            .withPropertyValues("contracts.legacy-mode=true")
+            .run { context ->
+                assertThat(context).hasNotFailed()
+                assertThat(context).hasSingleBean(ContractsProperties::class.java)
             }
     }
 
@@ -98,7 +108,7 @@ class ContractBlockingClientFactoryConfigurationTest {
                 ),
             ]
         )
-        class TestConfiguration {
+        class JacksonModuleConfiguration {
 
             @Bean
             fun jacksonKotlinModule(): KotlinModule = kotlinModule()

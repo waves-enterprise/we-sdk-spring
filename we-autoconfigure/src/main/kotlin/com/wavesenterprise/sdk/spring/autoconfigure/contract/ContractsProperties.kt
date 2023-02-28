@@ -1,11 +1,6 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.contract
 
-import org.springframework.boot.context.properties.ConfigurationProperties
-import org.springframework.boot.context.properties.ConstructorBinding
-
-@ConfigurationProperties(prefix = "contracts")
-@ConstructorBinding
-data class ContractsConfigurationProperties(
+data class ContractsProperties(
     val config: Map<String, Properties> = mutableMapOf(),
 ) {
 

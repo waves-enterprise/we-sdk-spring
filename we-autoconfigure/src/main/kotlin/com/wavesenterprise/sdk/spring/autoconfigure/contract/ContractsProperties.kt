@@ -10,7 +10,7 @@ data class ContractsProperties(
         val fee: Long = 0,
         val image: String? = null,
         val imageHash: String? = null,
-        val autoUpdate: AutoUpdate,
+        val autoUpdate: AutoUpdate = AutoUpdate(),
     ) {
         class AutoUpdate(
             val enabled: Boolean = false,

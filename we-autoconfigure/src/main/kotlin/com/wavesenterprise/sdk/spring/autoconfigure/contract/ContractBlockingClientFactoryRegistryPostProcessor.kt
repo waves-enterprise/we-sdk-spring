@@ -37,9 +37,24 @@ class ContractBlockingClientFactoryRegistryPostProcessor(
                 addConstructorArgValue(beanInfo.api)
                 addConstructorArgValue(ContractClientParams(false)) // todo
                 addConstructorArgValue(contractSignRequestBuilderFactory)
-                addConstructorArgValue(txSigner)
-                addConstructorArgValue(converterFactory)
-                addConstructorArgValue(nodeBlockingServiceFactory)
+
+                beanInfo.txSigner?.let {
+                    addConstructorArgValue(it)
+                } ?: beanInfo.txSignerBeanName?.let {
+                    if (it.isBlank()) null else addConstructorArgReference(it)
+                } ?: addConstructorArgValue(txSigner)
+
+                beanInfo.converterFactory?.let {
+                    addConstructorArgValue(it)
+                } ?: beanInfo.converterFactoryBeanName?.let {
+                    if (it.isBlank()) null else addConstructorArgReference(it)
+                } ?: converterFactory
+
+                beanInfo.nodeBlockingServiceFactory?.let {
+                    addConstructorArgValue(it)
+                } ?: beanInfo.nodeBlockingServiceFactoryBeanName?.let {
+                    if (it.isBlank()) null else addConstructorArgReference(it)
+                } ?: nodeBlockingServiceFactory
             }
 
             val resolvableType: ResolvableType = ResolvableType.forClassWithGenerics(

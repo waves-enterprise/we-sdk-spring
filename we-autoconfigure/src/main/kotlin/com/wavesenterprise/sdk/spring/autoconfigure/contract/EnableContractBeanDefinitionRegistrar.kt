@@ -1,5 +1,6 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.contract
 
+import com.wavesenterprise.sdk.spring.autoconfigure.contract.annotation.Contract
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.annotation.EnableContracts
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
 import org.springframework.beans.factory.support.BeanDefinitionRegistry
@@ -16,7 +17,7 @@ class EnableContractBeanDefinitionRegistrar : ImportBeanDefinitionRegistrar {
         val enableContracts = importingClassMetadata.getAnnotationAttributes(
             EnableContracts::class.java.name
         ) as AnnotationAttributes
-        val contracts = enableContracts.getAnnotationArray("contracts")
+        val contracts = enableContracts.getAnnotationArray(EnableContracts::contracts.name)
         contracts.map { contract ->
             val beanInfo = createBeanInfo(contract)
             BeanDefinitionBuilder.genericBeanDefinition(EnabledContractsBeanInfo::class.java) {
@@ -32,9 +33,14 @@ class EnableContractBeanDefinitionRegistrar : ImportBeanDefinitionRegistrar {
     private fun createBeanInfo(
         attrs: AnnotationAttributes,
     ): EnabledContractsBeanInfo {
-        val api = attrs.getClass<Class<*>>("api")
-        val impl = attrs.getClass<Class<*>>("impl")
-        val name = attrs.getString("name")
+        val api = attrs.getClass<Class<*>>(Contract::api.name)
+        val impl = attrs.getClass<Class<*>>(Contract::impl.name)
+        val name = attrs.getString(Contract::name.name)
+
+        val txSigner = attrs.getString(Contract::txSigner.name)
+        val nodeBlockingServiceFactory = attrs.getString(Contract::nodeBlockingServiceFactory.name)
+        val converterFactory = attrs.getString(Contract::converterFactory.name)
+
         require(api.isAssignableFrom(impl)) {
             "$impl should extend $api"
         }
@@ -43,6 +49,9 @@ class EnableContractBeanDefinitionRegistrar : ImportBeanDefinitionRegistrar {
             api = api,
             impl = impl,
             name = name,
+            txSignerBeanName = txSigner,
+            nodeBlockingServiceFactoryBeanName = nodeBlockingServiceFactory,
+            converterFactoryBeanName = converterFactory,
         )
     }
 

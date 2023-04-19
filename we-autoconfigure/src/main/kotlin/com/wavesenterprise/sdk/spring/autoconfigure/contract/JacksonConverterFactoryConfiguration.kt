@@ -11,10 +11,11 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.ApplicationContext
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.context.annotation.Primary
 
 @Configuration
-@ConditionalOnClass(ObjectMapper::class)
+@ConditionalOnClass(
+    ObjectMapper::class,
+)
 class JacksonConverterFactoryConfiguration {
 
     @Bean
@@ -29,7 +30,7 @@ class JacksonConverterFactoryConfiguration {
             }
 
     @Bean
-    @Primary
+    @ConditionalOnClass
     fun converterFactory(
         objectMapper: ObjectMapper,
     ): ConverterFactory = JacksonConverterFactory(

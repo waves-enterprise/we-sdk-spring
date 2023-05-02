@@ -12,6 +12,7 @@ dependencies {
 
     implementation("org.springframework.boot:spring-boot")
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm")
 
     optional("com.wavesenterprise:we-node-client-grpc-blocking-client")
     optional("com.wavesenterprise:we-node-client-feign-client")

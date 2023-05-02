@@ -34,6 +34,8 @@ val jacksonModuleKotlin: String by project
 val weNodeClientVersion: String by project
 val weContractSdkVersion: String by project
 
+val kotlinCoroutinesVersion: String by project
+
 plugins {
     kotlin("jvm") apply false
     `maven-publish`
@@ -255,6 +257,8 @@ subprojects {
             dependency("com.wavesenterprise:we-node-client-feign-client:$weNodeClientVersion")
             dependency("com.wavesenterprise:we-tx-signer-node:$weNodeClientVersion")
             dependency("com.wavesenterprise:we-contract-sdk-blocking-client:$weContractSdkVersion")
+
+            dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinCoroutinesVersion")
 
             dependency("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
 

@@ -1,4 +1,4 @@
-package com.wavesenterprise.sdk.spring.autoconfigure.contract
+package com.wavesenterprise.sdk.spring.autoconfigure.contract.properties
 
 data class ContractsProperties(
     val config: Map<String, Properties> = mutableMapOf(),

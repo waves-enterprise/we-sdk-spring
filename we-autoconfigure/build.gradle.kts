@@ -13,11 +13,13 @@ dependencies {
     implementation("org.springframework.boot:spring-boot")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm")
+    implementation("org.aspectj:aspectjweaver")
 
     optional("com.wavesenterprise:we-node-client-grpc-blocking-client")
     optional("com.wavesenterprise:we-node-client-feign-client")
     optional("com.wavesenterprise:we-contract-sdk-blocking-client")
     optional("com.wavesenterprise:we-tx-signer-node")
+    optional("com.wavesenterprise:we-atomic")
     optional("io.github.openfeign:feign-core")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -26,6 +28,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine")
     testImplementation("org.assertj:assertj-core")
     testImplementation("io.mockk:mockk")
+    testImplementation("com.ninja-squad:springmockk")
     testImplementation("com.fasterxml.jackson.module:jackson-module-kotlin:$kotlinModuleVersion")
 
     kapt("org.springframework.boot:spring-boot-configuration-processor")

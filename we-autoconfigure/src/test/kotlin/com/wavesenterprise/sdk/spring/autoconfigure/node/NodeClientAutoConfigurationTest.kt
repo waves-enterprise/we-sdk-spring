@@ -1,15 +1,10 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.node
 
-import com.wavesenterprise.sdk.node.client.blocking.address.AddressService
-import com.wavesenterprise.sdk.node.client.blocking.blocks.BlocksService
-import com.wavesenterprise.sdk.node.client.blocking.contract.ContractService
 import com.wavesenterprise.sdk.node.client.blocking.credentials.NodeCredentialsProvider
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFactory
-import com.wavesenterprise.sdk.node.client.blocking.node.NodeInfoService
-import com.wavesenterprise.sdk.node.client.blocking.privacy.PrivacyService
-import com.wavesenterprise.sdk.node.client.blocking.tx.TxService
 import com.wavesenterprise.sdk.node.domain.Address
 import com.wavesenterprise.sdk.node.domain.Password
+import com.wavesenterprise.sdk.spring.autoconfigure.node.properties.NodeProperties
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.boot.autoconfigure.AutoConfigurations
@@ -99,19 +94,6 @@ class NodeClientAutoConfigurationTest {
                 assertThat(context).hasSingleBean(NodeProperties::class.java)
                 val nodeProperties = context.getBean(NodeProperties::class.java)
                 assertThat(nodeProperties.config).isEmpty()
-            }
-    }
-
-    @Test
-    fun `should create beans for all node services`() {
-        applicationContextRunner
-            .run { context ->
-                assertThat(context).hasSingleBean(AddressService::class.java)
-                assertThat(context).hasSingleBean(BlocksService::class.java)
-                assertThat(context).hasSingleBean(ContractService::class.java)
-                assertThat(context).hasSingleBean(NodeInfoService::class.java)
-                assertThat(context).hasSingleBean(PrivacyService::class.java)
-                assertThat(context).hasSingleBean(TxService::class.java)
             }
     }
 }

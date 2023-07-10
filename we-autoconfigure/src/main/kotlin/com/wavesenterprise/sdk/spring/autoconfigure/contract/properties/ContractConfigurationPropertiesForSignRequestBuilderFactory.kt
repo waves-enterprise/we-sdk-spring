@@ -1,13 +1,14 @@
-package com.wavesenterprise.sdk.spring.autoconfigure.contract
+package com.wavesenterprise.sdk.spring.autoconfigure.contract.properties
 
 import com.wavesenterprise.sdk.node.domain.Fee
+import com.wavesenterprise.sdk.node.domain.TxVersion
 import com.wavesenterprise.sdk.node.domain.contract.ContractId
 import com.wavesenterprise.sdk.node.domain.contract.ContractImage
 import com.wavesenterprise.sdk.node.domain.contract.ContractImageHash
 import com.wavesenterprise.sdk.node.domain.contract.ContractName
-import com.wavesenterprise.sdk.node.domain.contract.ContractVersion
 import com.wavesenterprise.sdk.node.domain.sign.builder.ContractSignRequestBuilder
 import com.wavesenterprise.sdk.node.domain.sign.builder.ContractSignRequestBuilderFactory
+import com.wavesenterprise.sdk.spring.autoconfigure.contract.ContractSignRequestCustomizer
 import org.springframework.context.ApplicationContext
 
 class ContractConfigurationPropertiesForSignRequestBuilderFactory(
@@ -19,13 +20,17 @@ class ContractConfigurationPropertiesForSignRequestBuilderFactory(
         applicationContext.getBean(ContractsProperties::class.java)
     }
 
+    private val contractSignRequestCustomizers: Map<String, ContractSignRequestCustomizer> by lazy {
+        applicationContext.getBeansOfType(ContractSignRequestCustomizer::class.java)
+    }
+
     override fun create(): ContractSignRequestBuilder =
         requireNotNull(contractsConfigurationProperties.config[contractKey]) {
             "Couldn't find contract config for contract with name = '$contractKey'"
         }.run {
             with(ContractSignRequestBuilder()) {
                 contractName(ContractName(contractKey))
-                fee(Fee(0)) // where to get fee? fee from node via customizer
+                fee(Fee(fee))
                 image?.let {
                     image(ContractImage(it))
                 }
@@ -33,20 +38,18 @@ class ContractConfigurationPropertiesForSignRequestBuilderFactory(
                     contractId(ContractId.fromBase58(it))
                 }
                 version?.let {
-                    contractVersion(ContractVersion(it))
+                    version(TxVersion(it))
                 }
                 imageHash?.let {
                     imageHash(ContractImageHash(it))
                 }
                 apply {
-                    applicationContext
-                        .getBeansOfType(ContractSignRequestCustomizer::class.java)
-                        .values.forEach { contractSignRequestCustomizer ->
-                            contractSignRequestCustomizer.customize(
-                                contractKey = contractKey,
-                                contractSignRequestBuilder = this,
-                            )
-                        }
+                    contractSignRequestCustomizers.values.forEach { contractSignRequestCustomizer ->
+                        contractSignRequestCustomizer.customize(
+                            contractKey = contractKey,
+                            contractSignRequestBuilder = this,
+                        )
+                    }
                 }
             }
         }

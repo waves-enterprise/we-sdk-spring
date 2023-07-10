@@ -1,10 +1,11 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.contract
 
+import com.wavesenterprise.sdk.atomic.AtomicAwareTxSigner
 import com.wavesenterprise.sdk.contract.client.invocation.factory.ContractBlockingClientFactory
 import com.wavesenterprise.sdk.contract.client.invocation.factory.ContractClientParams
 import com.wavesenterprise.sdk.contract.core.converter.factory.ConverterFactory
-import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFactory
-import com.wavesenterprise.sdk.tx.signer.TxSigner
+import com.wavesenterprise.sdk.spring.autoconfigure.contract.properties.ContractConfigurationPropertiesForSignRequestBuilderFactory
+import org.springframework.beans.BeansException
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.AbstractBeanDefinition
 import org.springframework.beans.factory.support.BeanDefinitionBuilder
@@ -15,8 +16,6 @@ import org.springframework.context.ApplicationContext
 import org.springframework.core.ResolvableType
 
 class ContractBlockingClientFactoryRegistryPostProcessor(
-    private val txSigner: TxSigner?,
-    private val nodeBlockingServiceFactory: NodeBlockingServiceFactory,
     private val converterFactory: ConverterFactory,
     private val applicationContext: ApplicationContext,
 ) : BeanDefinitionRegistryPostProcessor {
@@ -42,19 +41,23 @@ class ContractBlockingClientFactoryRegistryPostProcessor(
                     addConstructorArgValue(it)
                 } ?: beanInfo.txSignerBeanName?.let {
                     if (it.isBlank()) null else addConstructorArgReference(it)
-                } ?: addConstructorArgValue(txSigner)
+                } ?: try {
+                    addConstructorArgValue(applicationContext.getBean(AtomicAwareTxSigner::class.java))
+                } catch (ex: BeansException) {
+                    addConstructorArgReference("txSigner")
+                }
 
                 beanInfo.converterFactory?.let {
                     addConstructorArgValue(it)
                 } ?: beanInfo.converterFactoryBeanName?.let {
                     if (it.isBlank()) null else addConstructorArgReference(it)
-                } ?: converterFactory
+                } ?: addConstructorArgValue(converterFactory)
 
                 beanInfo.nodeBlockingServiceFactory?.let {
                     addConstructorArgValue(it)
                 } ?: beanInfo.nodeBlockingServiceFactoryBeanName?.let {
                     if (it.isBlank()) null else addConstructorArgReference(it)
-                } ?: nodeBlockingServiceFactory
+                } ?: addConstructorArgReference("nodeBlockingServiceFactory")
             }
 
             val resolvableType: ResolvableType = ResolvableType.forClassWithGenerics(

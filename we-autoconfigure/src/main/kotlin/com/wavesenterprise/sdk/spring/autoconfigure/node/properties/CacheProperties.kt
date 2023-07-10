@@ -1,4 +1,4 @@
-package com.wavesenterprise.sdk.spring.autoconfigure.node
+package com.wavesenterprise.sdk.spring.autoconfigure.node.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding

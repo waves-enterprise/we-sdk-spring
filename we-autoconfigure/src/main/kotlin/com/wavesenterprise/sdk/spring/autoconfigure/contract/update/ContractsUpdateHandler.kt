@@ -5,14 +5,17 @@ import com.wavesenterprise.sdk.node.client.blocking.credentials.NodeCredentialsP
 import com.wavesenterprise.sdk.node.client.blocking.tx.TxService
 import com.wavesenterprise.sdk.node.domain.Address
 import com.wavesenterprise.sdk.node.domain.Fee
+import com.wavesenterprise.sdk.node.domain.TxFeature
+import com.wavesenterprise.sdk.node.domain.TxType
 import com.wavesenterprise.sdk.node.domain.TxVersion
+import com.wavesenterprise.sdk.node.domain.TxVersionDictionary
 import com.wavesenterprise.sdk.node.domain.contract.ContractId
 import com.wavesenterprise.sdk.node.domain.contract.ContractImage
 import com.wavesenterprise.sdk.node.domain.contract.ContractImageHash
 import com.wavesenterprise.sdk.node.domain.contract.ContractName
 import com.wavesenterprise.sdk.node.domain.sign.UpdateContractSignRequest
 import com.wavesenterprise.sdk.node.domain.tx.Tx
-import com.wavesenterprise.sdk.spring.autoconfigure.contract.ContractsProperties
+import com.wavesenterprise.sdk.spring.autoconfigure.contract.properties.ContractsProperties
 import com.wavesenterprise.sdk.tx.signer.node.credentials.Credentials
 import com.wavesenterprise.sdk.tx.signer.node.factory.TxServiceTxSignerFactory
 import org.slf4j.Logger
@@ -72,11 +75,11 @@ class ContractsUpdateHandler(
     ) {
         val helper = ContractUpdateHelper(
             contractId = contractId,
-            contractImage = ContractImage.fromString(contractProps.image!!),
-            contractImageHash = ContractImageHash.fromString(contractProps.imageHash!!),
-            txVersion = TxVersion.fromInt(2), // while only 2 version
+            contractImage = ContractImage.fromString(requireNotNull(contractProps.image)),
+            contractImageHash = ContractImageHash.fromString(requireNotNull(contractProps.imageHash)),
+            txVersion = TxVersion(TxVersionDictionary.maxVersionSupports(TxType.UPDATE_CONTRACT, TxFeature.ATOMIC)),
             fee = Fee.fromInt(contractProps.fee.toInt()),
-            senderAddress = Address.fromBase58(contractProps.autoUpdate.contractCreatorAddress!!),
+            senderAddress = Address.fromBase58(requireNotNull(contractProps.autoUpdate.contractCreatorAddress)),
         )
         if (!helper.isContractInfoFound()) {
             log.error(

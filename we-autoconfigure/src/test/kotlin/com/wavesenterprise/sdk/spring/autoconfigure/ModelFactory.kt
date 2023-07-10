@@ -5,7 +5,7 @@ import com.wavesenterprise.sdk.node.domain.contract.ContractImage
 import com.wavesenterprise.sdk.node.domain.contract.ContractImageHash
 import com.wavesenterprise.sdk.node.domain.contract.ContractInfo
 import com.wavesenterprise.sdk.node.domain.contract.ContractVersion
-import com.wavesenterprise.sdk.spring.autoconfigure.contract.ContractsProperties
+import com.wavesenterprise.sdk.spring.autoconfigure.contract.properties.ContractsProperties
 
 fun contractProps(
     contractId: String = "CgqRPcPnexY533gCh2SSvBXh5bca1qMs7KFGntawHGww",

@@ -3,7 +3,7 @@ package com.wavesenterprise.sdk.spring.autoconfigure.contract.update
 import com.wavesenterprise.sdk.node.client.blocking.contract.ContractService
 import com.wavesenterprise.sdk.node.client.blocking.credentials.NodeCredentialsProvider
 import com.wavesenterprise.sdk.node.client.blocking.tx.TxService
-import com.wavesenterprise.sdk.spring.autoconfigure.contract.ContractsProperties
+import com.wavesenterprise.sdk.spring.autoconfigure.contract.properties.ContractsProperties
 import com.wavesenterprise.sdk.tx.signer.node.factory.TxServiceTxSignerFactory
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean

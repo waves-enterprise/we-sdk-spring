@@ -1,10 +1,7 @@
-package com.wavesenterprise.sdk.spring.autoconfigure.node
+package com.wavesenterprise.sdk.spring.autoconfigure.node.properties
 
-import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding
 
-@ConstructorBinding
-@ConfigurationProperties(prefix = "node")
 data class NodeConfigurationProperties(
     val validationEnabled: Boolean = true,
     val skipConfigMarker: String = "DO_NOT_USE",
@@ -22,6 +19,8 @@ data class NodeConfigurationProperties(
 
         data class Http(
             val url: String = "",
+            val xApiKey: String? = null,
+            val xPrivacyApiKey: String? = null,
             val feign: Feign = Feign(),
         ) {
 

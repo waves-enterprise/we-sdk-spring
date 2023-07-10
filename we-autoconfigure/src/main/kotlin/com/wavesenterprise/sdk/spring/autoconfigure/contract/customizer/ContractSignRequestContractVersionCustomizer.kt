@@ -4,7 +4,7 @@ import com.wavesenterprise.sdk.node.client.blocking.contract.ContractService
 import com.wavesenterprise.sdk.node.domain.contract.ContractId
 import com.wavesenterprise.sdk.node.domain.sign.builder.ContractSignRequestBuilder
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.ContractSignRequestCustomizer
-import com.wavesenterprise.sdk.spring.autoconfigure.contract.ContractsProperties
+import com.wavesenterprise.sdk.spring.autoconfigure.contract.properties.ContractsProperties
 
 class ContractSignRequestContractVersionCustomizer(
     private val contractsProperties: ContractsProperties,

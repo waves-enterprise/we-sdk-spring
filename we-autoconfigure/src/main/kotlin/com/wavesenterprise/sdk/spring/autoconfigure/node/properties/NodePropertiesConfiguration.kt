@@ -1,15 +1,18 @@
-package com.wavesenterprise.sdk.spring.autoconfigure.node
+package com.wavesenterprise.sdk.spring.autoconfigure.node.properties
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
-import org.springframework.boot.context.properties.EnableConfigurationProperties
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
+import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
-@EnableConfigurationProperties(
-    NodeConfigurationProperties::class,
-)
+@ConditionalOnProperty(value = ["node.legacy-mode"], havingValue = "false", matchIfMissing = true)
 class NodePropertiesConfiguration {
+
+    @Bean
+    @ConfigurationProperties(prefix = "node")
+    fun nodeConfigurationProperties() = NodeConfigurationProperties()
 
     @Bean
     @ConditionalOnMissingBean
@@ -21,6 +24,8 @@ class NodePropertiesConfiguration {
             nodeAlias to NodeProperties.NodeConfig(
                 http = NodeProperties.NodeConfig.Http(
                     url = config.http.url,
+                    xApiKey = config.http.xApiKey,
+                    xPrivacyApiKey = config.http.xPrivacyApiKey,
                     feign = NodeProperties.NodeConfig.Http.Feign(
                         decode404 = config.http.feign.decode404,
                         connectTimeout = config.http.feign.connectTimeout,

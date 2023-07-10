@@ -18,6 +18,7 @@ import com.wavesenterprise.sdk.node.domain.contract.ContractName
 import com.wavesenterprise.sdk.node.domain.contract.ContractVersion
 import com.wavesenterprise.sdk.node.domain.sign.UpdateContractSignRequest
 import com.wavesenterprise.sdk.node.domain.tx.UpdateContractTx
+import com.wavesenterprise.sdk.spring.autoconfigure.contract.properties.ContractsProperties
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.update.ContractIdProvider
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.update.ContractsUpdateHandler
 import com.wavesenterprise.sdk.spring.autoconfigure.contractProps

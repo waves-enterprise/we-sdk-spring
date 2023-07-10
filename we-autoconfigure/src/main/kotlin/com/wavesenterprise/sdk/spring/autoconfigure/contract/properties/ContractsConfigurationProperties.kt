@@ -1,4 +1,4 @@
-package com.wavesenterprise.sdk.spring.autoconfigure.contract
+package com.wavesenterprise.sdk.spring.autoconfigure.contract.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 import org.springframework.boot.context.properties.ConstructorBinding

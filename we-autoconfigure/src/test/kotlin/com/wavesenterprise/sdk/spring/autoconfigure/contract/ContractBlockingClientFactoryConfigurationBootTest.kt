@@ -8,6 +8,7 @@ import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFact
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeInfoService
 import com.wavesenterprise.sdk.node.client.blocking.privacy.PrivacyService
 import com.wavesenterprise.sdk.node.client.blocking.tx.TxService
+import com.wavesenterprise.sdk.node.client.blocking.util.UtilsService
 import com.wavesenterprise.sdk.node.domain.Address
 import com.wavesenterprise.sdk.node.domain.DataEntry
 import com.wavesenterprise.sdk.node.domain.DataKey
@@ -15,6 +16,7 @@ import com.wavesenterprise.sdk.node.domain.DataSize
 import com.wavesenterprise.sdk.node.domain.DataValue
 import com.wavesenterprise.sdk.node.domain.Fee
 import com.wavesenterprise.sdk.node.domain.TxCount
+import com.wavesenterprise.sdk.node.domain.TxVersion
 import com.wavesenterprise.sdk.node.domain.contract.ContractId
 import com.wavesenterprise.sdk.node.domain.contract.ContractImage
 import com.wavesenterprise.sdk.node.domain.contract.ContractImageHash
@@ -75,7 +77,7 @@ class ContractBlockingClientFactoryConfigurationBootTest {
     fun init() {
         every { contractService.getContractInfo(any()) } returns Optional.of(contractInfo())
         every { txService.broadcast(any()) } returns callContractTx()
-        every { txService.utxInfo() } returns UtxSize(TxCount(10), DataSize(1))
+        every { txService.utxSize() } returns UtxSize(TxCount(10), DataSize(1))
     }
 
     @Test
@@ -150,6 +152,7 @@ class ContractBlockingClientFactoryConfigurationBootTest {
         private val blocksService: BlocksService = mockk()
         private val nodeInfoService: NodeInfoService = mockk()
         private val privacyService: PrivacyService = mockk()
+        private val utilsService: UtilsService = mockk()
 
         @Bean
         fun txSigner(): TxSigner = txSigner
@@ -176,6 +179,9 @@ class ContractBlockingClientFactoryConfigurationBootTest {
         fun txSignerFactory(): TxServiceTxSignerFactory = txSignerFactory
 
         @Bean
+        fun utilsService(): UtilsService = utilsService
+
+        @Bean
         fun nodeBlockingServiceFactory(): NodeBlockingServiceFactory = mockk<NodeBlockingServiceFactory>().also {
             every { it.txService() } returns txService
             every { it.addressService() } returns addressService
@@ -183,6 +189,7 @@ class ContractBlockingClientFactoryConfigurationBootTest {
             every { it.contractService() } returns contractService
             every { it.nodeInfoService() } returns nodeInfoService
             every { it.privacyService() } returns privacyService
+            every { it.utilService() } returns utilsService
         }
     }
 
@@ -201,7 +208,7 @@ class ContractBlockingClientFactoryConfigurationBootTest {
                     value = DataValue.StringDataValue(value = "test"),
                 )
             ),
-            version = null,
+            version = TxVersion(3),
             fee = Fee(0),
             image = ContractImage("test-one"),
             imageHash = ContractImageHash("test-one-image-hash"),
@@ -222,7 +229,7 @@ class ContractBlockingClientFactoryConfigurationBootTest {
                     value = DataValue.StringDataValue(value = "test"),
                 ),
             ),
-            version = null,
+            version = TxVersion(3),
             fee = Fee(0),
             image = ContractImage("test-two"),
             imageHash = ContractImageHash("test-two-image-hash"),

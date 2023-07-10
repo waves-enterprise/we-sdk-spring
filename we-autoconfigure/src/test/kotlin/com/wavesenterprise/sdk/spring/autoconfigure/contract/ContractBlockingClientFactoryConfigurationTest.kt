@@ -10,7 +10,9 @@ import com.wavesenterprise.sdk.contract.jackson.JacksonConverterFactory
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFactory
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.annotation.Contract
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.annotation.EnableContracts
+import com.wavesenterprise.sdk.spring.autoconfigure.contract.properties.ContractsProperties
 import com.wavesenterprise.sdk.spring.autoconfigure.node.NodeBlockingServiceFactoryAutoConfiguration
+import com.wavesenterprise.sdk.spring.autoconfigure.node.service.NodeServicesAutoConfiguration
 import com.wavesenterprise.sdk.tx.signer.TxSigner
 import com.wavesenterprise.sdk.tx.signer.node.factory.TxServiceTxSignerFactory
 import io.mockk.every
@@ -30,6 +32,7 @@ class ContractBlockingClientFactoryConfigurationTest {
         .withConfiguration(
             AutoConfigurations.of(
                 NodeBlockingServiceFactoryAutoConfiguration::class.java,
+                NodeServicesAutoConfiguration::class.java,
                 ContractAutoConfiguration::class.java,
             )
         )
@@ -150,6 +153,9 @@ class ContractBlockingClientFactoryConfigurationTest {
 
             @Bean
             fun jacksonJavaTimeModule(): JavaTimeModule = JavaTimeModule()
+
+            @Bean
+            fun txSigner(): TxSigner = mockk()
         }
     }
 
@@ -234,6 +240,7 @@ class ContractBlockingClientFactoryConfigurationTest {
             every { it.contractService() } returns mockk()
             every { it.nodeInfoService() } returns mockk()
             every { it.privacyService() } returns mockk()
+            every { it.utilService() } returns mockk()
         }
     }
 
@@ -259,7 +266,11 @@ class ContractBlockingClientFactoryConfigurationTest {
             ),
         ]
     )
-    class AppConfig
+    class AppConfig {
+
+        @Bean
+        fun txSigner(): TxSigner = mockk()
+    }
 
     @Configuration
     @EnableContracts(

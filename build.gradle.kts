@@ -34,6 +34,8 @@ val jacksonModuleKotlin: String by project
 val weNodeClientVersion: String by project
 val weContractSdkVersion: String by project
 
+val aspectjVersion: String by project
+
 val kotlinCoroutinesVersion: String by project
 
 plugins {
@@ -256,6 +258,7 @@ subprojects {
             dependency("com.wavesenterprise:we-node-client-grpc-blocking-client:$weNodeClientVersion")
             dependency("com.wavesenterprise:we-node-client-feign-client:$weNodeClientVersion")
             dependency("com.wavesenterprise:we-tx-signer-node:$weNodeClientVersion")
+            dependency("com.wavesenterprise:we-atomic:$weNodeClientVersion")
             dependency("com.wavesenterprise:we-contract-sdk-blocking-client:$weContractSdkVersion")
 
             dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinCoroutinesVersion")
@@ -263,6 +266,8 @@ subprojects {
             dependency("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
 
             dependency("ch.qos.logback:logback-classic:$logbackVersion")
+
+            dependency("org.aspectj:aspectjweaver:$aspectjVersion")
 
             dependency("io.github.openfeign:feign-core:$feignVersion")
             dependency("io.github.openfeign:feign-jackson:$feignVersion")

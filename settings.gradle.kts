@@ -37,5 +37,7 @@ rootProject.name = "we-sdk-spring"
 include(
     "we-autoconfigure",
     "we-starters:we-starter-contract-client",
-    "we-starters:we-starter-node-client"
+    "we-starters:we-starter-node-client",
+    "we-starters:we-starter-atomic",
+    "we-starters:we-starter-tx-signer"
 )

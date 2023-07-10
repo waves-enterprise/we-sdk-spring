@@ -1,4 +1,4 @@
-package com.wavesenterprise.sdk.spring.autoconfigure.node
+package com.wavesenterprise.sdk.spring.autoconfigure.node.properties
 
 data class NodeProperties(
     val validationEnabled: Boolean,
@@ -12,6 +12,8 @@ data class NodeProperties(
 
         data class Http(
             val url: String,
+            val xApiKey: String? = null,
+            val xPrivacyApiKey: String? = null,
             val feign: Feign,
         ) {
             data class Feign(

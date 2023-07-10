@@ -5,7 +5,7 @@ import com.wavesenterprise.sdk.node.domain.contract.ContractId
 import com.wavesenterprise.sdk.node.domain.contract.ContractInfo
 import com.wavesenterprise.sdk.node.domain.contract.ContractVersion
 import com.wavesenterprise.sdk.node.domain.sign.builder.ContractSignRequestBuilder
-import com.wavesenterprise.sdk.spring.autoconfigure.contract.ContractsProperties
+import com.wavesenterprise.sdk.spring.autoconfigure.contract.properties.ContractsProperties
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot

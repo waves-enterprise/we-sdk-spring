@@ -4,6 +4,7 @@ import com.wavesenterprise.sdk.atomic.AtomicAwareTxSigner
 import com.wavesenterprise.sdk.contract.client.invocation.factory.ContractBlockingClientFactory
 import com.wavesenterprise.sdk.contract.client.invocation.factory.ContractClientParams
 import com.wavesenterprise.sdk.contract.core.converter.factory.ConverterFactory
+import com.wavesenterprise.sdk.contract.core.state.LocalValidationContextManager
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.properties.ContractConfigurationPropertiesForSignRequestBuilderFactory
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
@@ -18,6 +19,7 @@ import org.springframework.core.ResolvableType
 class ContractBlockingClientFactoryRegistryPostProcessor(
     private val converterFactory: ConverterFactory,
     private val applicationContext: ApplicationContext,
+    private val localValidationContextManager: LocalValidationContextManager,
 ) : BeanDefinitionRegistryPostProcessor {
 
     override fun postProcessBeanDefinitionRegistry(registry: BeanDefinitionRegistry) {
@@ -58,6 +60,7 @@ class ContractBlockingClientFactoryRegistryPostProcessor(
                 } ?: beanInfo.nodeBlockingServiceFactoryBeanName?.let {
                     if (it.isBlank()) null else addConstructorArgReference(it)
                 } ?: addConstructorArgReference("nodeBlockingServiceFactory")
+                addConstructorArgValue(localValidationContextManager)
             }
 
             val resolvableType: ResolvableType = ResolvableType.forClassWithGenerics(

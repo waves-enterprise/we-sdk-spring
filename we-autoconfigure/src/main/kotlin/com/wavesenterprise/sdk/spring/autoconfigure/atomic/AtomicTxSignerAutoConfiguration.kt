@@ -1,8 +1,8 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.atomic
 
-import com.wavesenterprise.sdk.atomic.AtomicAwareContextManager
 import com.wavesenterprise.sdk.atomic.AtomicAwareNodeBlockingServiceFactory
 import com.wavesenterprise.sdk.atomic.AtomicBroadcaster
+import com.wavesenterprise.sdk.atomic.manager.AtomicAwareContextManager
 import com.wavesenterprise.sdk.spring.autoconfigure.signer.WeTxServiceTxSignerAutoConfiguration
 import org.springframework.boot.autoconfigure.AutoConfigureAfter
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass

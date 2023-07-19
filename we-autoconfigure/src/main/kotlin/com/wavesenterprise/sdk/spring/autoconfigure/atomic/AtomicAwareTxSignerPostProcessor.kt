@@ -1,6 +1,6 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.atomic
 
-import com.wavesenterprise.sdk.atomic.AtomicAwareContextManager
+import com.wavesenterprise.sdk.atomic.manager.AtomicAwareContextManager
 import com.wavesenterprise.sdk.tx.signer.TxSigner
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.core.Ordered

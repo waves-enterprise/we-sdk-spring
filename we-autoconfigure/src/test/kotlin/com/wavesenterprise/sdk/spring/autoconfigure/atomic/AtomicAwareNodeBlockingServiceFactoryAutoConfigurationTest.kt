@@ -1,6 +1,8 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.atomic
 
 import com.wavesenterprise.sdk.atomic.AtomicAwareTxSigner
+import com.wavesenterprise.sdk.atomic.manager.AtomicAwareContextManagerHook
+import com.wavesenterprise.sdk.atomic.manager.ContractInfoCacheManager
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFactory
 import com.wavesenterprise.sdk.tx.signer.TxSigner
 import io.mockk.every
@@ -31,6 +33,8 @@ class AtomicAwareNodeBlockingServiceFactoryAutoConfigurationTest {
             assertThat(context).hasBean("atomicBroadcaster")
             assertThat(context).hasSingleBean(AtomicAwareTxSigner::class.java)
             assertThat(context).hasBean("atomicAspect")
+            assertThat(context).hasSingleBean(ContractInfoCacheManager::class.java)
+            assertThat(context).hasSingleBean(AtomicAwareContextManagerHook::class.java)
         }
     }
 

@@ -1,9 +1,13 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.atomic
 
-import com.wavesenterprise.sdk.atomic.AtomicAwareContextManager
 import com.wavesenterprise.sdk.atomic.AtomicAwareNodeBlockingServiceFactory
 import com.wavesenterprise.sdk.atomic.AtomicBroadcaster
-import com.wavesenterprise.sdk.atomic.ThreadLocalAtomicAwareContextManager
+import com.wavesenterprise.sdk.atomic.cache.contract.info.ThreadLocalContractInfoCacheManager
+import com.wavesenterprise.sdk.atomic.manager.AtomicAwareContextManager
+import com.wavesenterprise.sdk.atomic.manager.AtomicAwareContextManagerHook
+import com.wavesenterprise.sdk.atomic.manager.ContractInfoCacheContextManagerHook
+import com.wavesenterprise.sdk.atomic.manager.ContractInfoCacheManager
+import com.wavesenterprise.sdk.atomic.manager.ThreadLocalAtomicAwareContextManagerWithHook
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFactory
 import com.wavesenterprise.sdk.spring.autoconfigure.node.NodeBlockingServiceFactoryAutoConfiguration
 import com.wavesenterprise.sdk.spring.autoconfigure.node.service.NodeServicesAutoConfiguration
@@ -27,8 +31,23 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy
 class AtomicAwareNodeBlockingServiceFactoryAutoConfiguration {
 
     @Bean
-    fun atomicAwareContextManager(): AtomicAwareContextManager =
-        ThreadLocalAtomicAwareContextManager()
+    fun contractInfoCacheManager(): ContractInfoCacheManager = ThreadLocalContractInfoCacheManager()
+
+    @Bean
+    fun atomicAwareContextManagerHook(
+        contractInfoCacheManager: ContractInfoCacheManager
+    ): AtomicAwareContextManagerHook =
+        ContractInfoCacheContextManagerHook(
+            contractInfoCacheManager = contractInfoCacheManager,
+        )
+
+    @Bean
+    fun atomicAwareContextManager(
+        atomicAwareContextManagerHook: AtomicAwareContextManagerHook,
+    ): AtomicAwareContextManager =
+        ThreadLocalAtomicAwareContextManagerWithHook(
+            atomicAwareContextManagerHook = atomicAwareContextManagerHook,
+        )
 
     @Bean
     fun atomicBroadcaster(
@@ -45,6 +64,12 @@ class AtomicAwareNodeBlockingServiceFactoryAutoConfiguration {
     @Bean
     fun atomicAwareNodeBlockingServiceFactoryPostProcessor(
         applicationContext: ApplicationContext,
+        contractInfoCacheManager: ContractInfoCacheManager,
+        atomicAwareContextManager: AtomicAwareContextManager,
     ): AtomicAwareNodeBlockingServiceFactoryPostProcessor =
-        AtomicAwareNodeBlockingServiceFactoryPostProcessor(applicationContext)
+        AtomicAwareNodeBlockingServiceFactoryPostProcessor(
+            applicationContext = applicationContext,
+            contractInfoCacheManager = contractInfoCacheManager,
+            atomicAwareContextManager = atomicAwareContextManager,
+        )
 }

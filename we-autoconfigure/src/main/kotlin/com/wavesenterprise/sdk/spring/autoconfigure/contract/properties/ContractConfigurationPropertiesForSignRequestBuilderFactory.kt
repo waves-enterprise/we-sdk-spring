@@ -24,7 +24,7 @@ class ContractConfigurationPropertiesForSignRequestBuilderFactory(
         applicationContext.getBeansOfType(ContractSignRequestCustomizer::class.java)
     }
 
-    override fun create(): ContractSignRequestBuilder =
+    override fun create(contractId: ContractId?): ContractSignRequestBuilder =
         requireNotNull(contractsConfigurationProperties.config[contractKey]) {
             "Couldn't find contract config for contract with name = '$contractKey'"
         }.run {
@@ -34,8 +34,13 @@ class ContractConfigurationPropertiesForSignRequestBuilderFactory(
                 image?.let {
                     image(ContractImage(it))
                 }
-                contractId?.let {
-                    contractId(ContractId.fromBase58(it))
+                val actualContractId = getContractId(
+                    properties = this@run,
+                    contractId = contractId,
+                    contractSignRequestBuilder = this,
+                )
+                actualContractId?.let {
+                    contractId(it)
                 }
                 version?.let {
                     version(TxVersion(it))
@@ -47,10 +52,25 @@ class ContractConfigurationPropertiesForSignRequestBuilderFactory(
                     contractSignRequestCustomizers.values.forEach { contractSignRequestCustomizer ->
                         contractSignRequestCustomizer.customize(
                             contractKey = contractKey,
+                            contractId = actualContractId,
                             contractSignRequestBuilder = this,
                         )
                     }
                 }
             }
         }
+
+    private fun getContractId(
+        properties: ContractsProperties.Properties,
+        contractId: ContractId?,
+        contractSignRequestBuilder: ContractSignRequestBuilder
+    ): ContractId? {
+        val actualContractId = properties.contractId?.let {
+            ContractId.fromBase58(it)
+        } ?: contractId
+        actualContractId?.let {
+            contractSignRequestBuilder.contractId(it)
+        }
+        return actualContractId
+    }
 }

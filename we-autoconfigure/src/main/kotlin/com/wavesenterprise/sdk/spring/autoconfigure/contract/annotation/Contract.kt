@@ -10,4 +10,6 @@ annotation class Contract(
     val txSigner: String = "",
     val nodeBlockingServiceFactory: String = "",
     val converterFactory: String = "",
+
+    val localValidationEnabled: Boolean = true,
 )

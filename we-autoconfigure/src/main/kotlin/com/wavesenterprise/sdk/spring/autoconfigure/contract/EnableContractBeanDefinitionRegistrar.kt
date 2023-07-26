@@ -41,6 +41,8 @@ class EnableContractBeanDefinitionRegistrar : ImportBeanDefinitionRegistrar {
         val nodeBlockingServiceFactory = attrs.getString(Contract::nodeBlockingServiceFactory.name)
         val converterFactory = attrs.getString(Contract::converterFactory.name)
 
+        val localValidationEnabled = attrs.getBoolean(Contract::localValidationEnabled.name)
+
         require(api.isAssignableFrom(impl)) {
             "$impl should extend $api"
         }
@@ -52,6 +54,7 @@ class EnableContractBeanDefinitionRegistrar : ImportBeanDefinitionRegistrar {
             txSignerBeanName = txSigner,
             nodeBlockingServiceFactoryBeanName = nodeBlockingServiceFactory,
             converterFactoryBeanName = converterFactory,
+            localValidationEnabled = localValidationEnabled,
         )
     }
 

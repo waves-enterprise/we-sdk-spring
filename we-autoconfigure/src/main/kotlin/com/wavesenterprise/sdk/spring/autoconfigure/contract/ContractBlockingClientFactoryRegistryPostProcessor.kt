@@ -36,7 +36,7 @@ class ContractBlockingClientFactoryRegistryPostProcessor(
             defBuilder.apply {
                 addConstructorArgValue(beanInfo.impl)
                 addConstructorArgValue(beanInfo.api)
-                addConstructorArgValue(ContractClientParams(false)) // todo
+                addConstructorArgValue(ContractClientParams(beanInfo.localValidationEnabled))
                 addConstructorArgValue(contractSignRequestBuilderFactory)
 
                 beanInfo.txSigner?.let {

@@ -138,11 +138,13 @@ class ContractBlockingClientFactoryConfigurationTest {
                     api = TestContractOne::class,
                     impl = TestContractOneImpl::class,
                     name = "testOne",
+                    localValidationEnabled = false,
                 ),
                 Contract(
                     api = TestContractTwo::class,
                     impl = TestContractTwoImpl::class,
                     name = "testTwo",
+                    localValidationEnabled = false,
                 ),
             ]
         )
@@ -207,6 +209,7 @@ class ContractBlockingClientFactoryConfigurationTest {
                 txSigner = "customTxSigner",
                 nodeBlockingServiceFactory = "customNodeBlockingServiceFactory",
                 converterFactory = "customConverterFactory",
+                localValidationEnabled = false,
             ),
             Contract(
                 api = TestContractTwo::class,
@@ -215,6 +218,7 @@ class ContractBlockingClientFactoryConfigurationTest {
                 txSigner = "customTxSigner",
                 nodeBlockingServiceFactory = "customNodeBlockingServiceFactory",
                 converterFactory = "customConverterFactory",
+                localValidationEnabled = false,
             ),
         ]
     )
@@ -251,6 +255,7 @@ class ContractBlockingClientFactoryConfigurationTest {
                 api = TestContractOne::class,
                 impl = TestContractOneImpl::class,
                 name = "starter-contract",
+                localValidationEnabled = false,
             )
         ]
     )
@@ -263,6 +268,7 @@ class ContractBlockingClientFactoryConfigurationTest {
                 api = TestContractTwo::class,
                 impl = TestContractTwoImpl::class,
                 name = "app-contract",
+                localValidationEnabled = false,
             ),
         ]
     )
@@ -279,6 +285,7 @@ class ContractBlockingClientFactoryConfigurationTest {
                 api = TestContractOne::class,
                 impl = TestContractOneImpl::class,
                 name = "starter-contract",
+                localValidationEnabled = false,
             ),
         ]
     )

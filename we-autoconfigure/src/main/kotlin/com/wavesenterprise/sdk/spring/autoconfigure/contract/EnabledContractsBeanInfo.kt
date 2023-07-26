@@ -16,4 +16,6 @@ class EnabledContractsBeanInfo(
     val txSignerBeanName: String? = null,
     val nodeBlockingServiceFactoryBeanName: String? = null,
     val converterFactoryBeanName: String? = null,
+
+    val localValidationEnabled: Boolean = true,
 )

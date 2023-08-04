@@ -7,7 +7,7 @@ import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFact
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeInfoService
 import com.wavesenterprise.sdk.node.client.blocking.privacy.PrivacyService
 import com.wavesenterprise.sdk.node.client.blocking.tx.TxService
-import com.wavesenterprise.sdk.node.client.blocking.util.UtilsService
+import com.wavesenterprise.sdk.node.client.blocking.util.NodeUtilsService
 import com.wavesenterprise.sdk.spring.autoconfigure.node.service.NodeServicesAutoConfiguration
 import io.mockk.every
 import io.mockk.mockk
@@ -33,7 +33,7 @@ class NodeServicesAutoConfigurationTest {
                 assertThat(context).hasSingleBean(NodeInfoService::class.java)
                 assertThat(context).hasSingleBean(PrivacyService::class.java)
                 assertThat(context).hasSingleBean(TxService::class.java)
-                assertThat(context).hasSingleBean(UtilsService::class.java)
+                assertThat(context).hasSingleBean(NodeUtilsService::class.java)
             }
     }
 
@@ -48,7 +48,7 @@ class NodeServicesAutoConfigurationTest {
             every { it.contractService() } returns mockk()
             every { it.nodeInfoService() } returns mockk()
             every { it.privacyService() } returns mockk()
-            every { it.utilService() } returns mockk()
+            every { it.nodeUtilsService(g) } returns mockk()
         }
     }
 }

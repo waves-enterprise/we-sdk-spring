@@ -65,6 +65,7 @@ class ContractConfigurationPropertiesForSignRequestBuilderFactory(
         contractId: ContractId?,
         contractSignRequestBuilder: ContractSignRequestBuilder
     ): ContractId? {
+        // todo specified overrides properties
         val actualContractId = properties.contractId?.let {
             ContractId.fromBase58(it)
         } ?: contractId

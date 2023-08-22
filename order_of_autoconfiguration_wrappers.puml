@@ -1,0 +1,9 @@
+@startuml diagram
+
+class AtomicAwareNodeBlockingServiceFactoryAutoConfiguration <<@Configuration>> <<@AutoConfigureAfter(NodeBlockingServiceFactoryAutoConfiguration::class)>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>>
+class NodeBlockingServiceFactoryAutoConfiguration <<@Configuration>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>>
+class NodeServicesAutoConfiguration <<@Configuration>>
+class CustomNodeBlockingFactoryConfiguration <<@Configuration>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>> <<@AutoConfigureAfter(AtomicAwareNodeBlockingServiceFactoryAutoConfiguration::class)>>
+note bottom of CustomNodeBlockingFactoryConfiguration : User wrapper of NodeBlockingServiceFactory with settings of ordering
+note bottom of NodeServicesAutoConfiguration : Executed last in order to provide bean of services from the latest wrapper
+@enduml

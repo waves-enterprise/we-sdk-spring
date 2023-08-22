@@ -1,0 +1,39 @@
+@startuml diagram
+
+interface NodeBlockingServiceFactory {
+    TxService txService();
+    ContractService contractServiceContractService();
+    AddressService addressService();
+    NodeInfoService nodeInfoService();
+    PrivacyService privacyService();
+    BlocksService blocksService();
+    BlockchainEventsService blockchainEventsService();
+    UtilsService utilsService();
+}
+
+LoadBalancingServiceFactory o-- RateLimitingServiceFactory
+AtomicAwareNodeBlockingServiceFactory o-- LoadBalancingServiceFactory
+CustomNodeBlockingServiceFactory o-- AtomicAwareNodeBlockingServiceFactory
+RateLimitingServiceFactory o-- ActualImplementation
+
+
+LoadBalancingServiceFactory ..|> NodeBlockingServiceFactory
+AtomicAwareNodeBlockingServiceFactory ..|> NodeBlockingServiceFactory
+CustomNodeBlockingServiceFactory ..|> NodeBlockingServiceFactory
+RateLimitingServiceFactory ..|> NodeBlockingServiceFactory
+ActualImplementation ..|> NodeBlockingServiceFactory : node
+
+note bottom of ActualImplementation: Implementation with grpc or http connection
+note top of CustomNodeBlockingServiceFactory: Custom user wrapper implementation (optional)
+
+
+
+@enduml
+
+RateLimitingServiceFactory o-- GrpcNodeServiceFactory
+FeignNodeServiceFactory <|-- NodeBlockingServiceFactory
+RateLimitingServiceFactory o-- FeignNodeServiceFactory
+
+order autoconfig uml
+
+example custom wrapper

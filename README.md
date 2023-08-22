@@ -12,10 +12,10 @@ List of possible dependencies:
 * [we-starter-tx-signer](we-starters%2Fwe-starter-tx-signer)
 
 ## we-starter-node-client
-Стартер, предоставляющий отдельные сервисы для взаимодействия с нодой. \
-Список сервисов: TxService, ContractService, AddressService, NodeInfoService, PrivacyService, BlocksService, BlockchainEventsService, UtilsService. Названия сервисов совпадают с ендпоинтами api ноды. 
-Основным элементом стартера является интерфейс `NodeBlockingServiceFactory`, который позволяет оборачивать и перепределять методы сервисов (подробнее в документации `we-node-client`). \
-### Добавление зависимости
+A starter that provides separate services for interacting with the node. \
+List of services: `TxService`, `ContractService`, `AddressService`, `NodeInfoService`, `PrivacyService`, `BlocksService`, `BlockchainEventsService`, `UtilsService`. The names of the services match the endpoints of the node api.
+The main element of the starter is the `NodeBlockingServiceFactory` interface, which allows you to wrap and redistribute service methods (for more information, see the `we-node-client` documentation). \
+### Adding dependency
 Gradle:
 ```
 implementation("com.wavesenterprise:we-starter-node-client")
@@ -28,7 +28,7 @@ Maven:
     <version>$version</version>
 </dependency>
 ```
-### Настройка
+### Configuration
 Before you start working with `we-starter-node-client`, you need to set values in the configuration file for working with the node. \
 The main setting is [NodeProperties](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fnode%2Fproperties%2FNodeProperties.kt) \
 _Note:_ When switching from vst client, you need to add `node.config.node-0.legacy-mode: true`
@@ -75,7 +75,102 @@ _Note:_ For more information about wrappers, see the `we-node-client` documentat
 
 An important element of this autoconfiguration is that in a separate configuration are the settings of the node services [NodeServicesAutoConfiguration](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fnode%2Fservice%2FNodeServicesAutoConfiguration.kt) . This configuration is performed after all wrappers for `NodeServiceFactory` counting the spring annotation `@AutoConfigureBefore(NodeServicesAutoConfiguration::class)` \
 This allows you to add client wrappers in client code via postprocessor and use node services via bean injection without a full client (An example of implementing a wrapper for atomics [AtomicAwareNodeBlockingServiceFactoryPostProcessor](we-autoconfigure%2Fsrc%2fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryPostProcessor.kt)) in [AtomicAwareNodeBlockingServiceFactoryAutoConfiguration](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryAutoConfiguration.kt).
-### Schema of wrappers @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+### Schema of wrappers
+#### Schema 
+```plantuml
+interface NodeBlockingServiceFactory {
+    TxService txService();
+    ContractService contractServiceContractService();
+    AddressService addressService();
+    NodeInfoService nodeInfoService();
+    PrivacyService privacyService();
+    BlocksService blocksService();
+    BlockchainEventsService blockchainEventsService();
+    UtilsService utilsService();
+}
+LoadBalancingServiceFactory o-- RateLimitingServiceFactory
+AtomicAwareNodeBlockingServiceFactory o-- LoadBalancingServiceFactory
+CustomNodeBlockingServiceFactory o-- AtomicAwareNodeBlockingServiceFactory
+RateLimitingServiceFactory o-- ActualImplementation
+LoadBalancingServiceFactory ..|> NodeBlockingServiceFactory
+AtomicAwareNodeBlockingServiceFactory ..|> NodeBlockingServiceFactory
+CustomNodeBlockingServiceFactory ..|> NodeBlockingServiceFactory
+RateLimitingServiceFactory ..|> NodeBlockingServiceFactory
+ActualImplementation ..|> NodeBlockingServiceFactory : node
+
+note bottom of ActualImplementation: Implementation with grpc or http connection
+note top of CustomNodeBlockingServiceFactory: Custom user wrapper implementation (optional)
+```
+
+#### Schema of configuration ordering of wrappers
+```plantuml
+class AtomicAwareNodeBlockingServiceFactoryAutoConfiguration <<@Configuration>> <<@AutoConfigureAfter(NodeBlockingServiceFactoryAutoConfiguration::class)>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>>
+class NodeBlockingServiceFactoryAutoConfiguration <<@Configuration>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>>
+class NodeServicesAutoConfiguration <<@Configuration>>
+class CustomNodeBlockingFactoryConfiguration <<@Configuration>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>> <<@AutoConfigureAfter(AtomicAwareNodeBlockingServiceFactoryAutoConfiguration::class)>>
+note bottom of CustomNodeBlockingFactoryConfiguration : User wrapper of NodeBlockingServiceFactory with settings of ordering
+note bottom of NodeServicesAutoConfiguration : Executed last in order to provide bean of services from the latest wrapper
+```
+##### Example of creation CustomNodeBlockingFactory
+```kotlin
+@Configuration
+@AutoConfigureBefore(NodeServicesAutoConfiguration::class)
+@AutoConfigureAfter(AtomicAwareNodeBlockingServiceFactoryAutoConfiguration::class)
+class CustomNodeBlockingFactoryConfiguration {
+    
+    @Bean
+    fun customNodeBlockingServiceFactoryPostProcessor(): CustomNodeBlockingServiceFactoryPostProcessor =
+        CustomNodeBlockingServiceFactoryPostProcessor()
+}
+
+class CustomNodeBlockingServiceFactoryPostProcessor : BeanPostProcessor {
+    override fun postProcessAfterInitialization(bean: Any, beanName: String): Any = when (bean) {
+        is NodeBlockingServiceFactory -> CustomNodeBlockingServiceFactory(
+            nodeBlockingServiceFactory = bean,
+        )
+        else -> bean
+    }
+}
+
+class CustomNodeBlockingServiceFactory(
+    val nodeBlockingServiceFactory: NodeBlockingServiceFactory,
+): NodeBlockingServiceFactory by nodeBlockingServiceFactory {
+    // overridden methods
+}
+```
+```java
+@Configuration
+@AutoConfigureBefore(NodeServicesAutoConfiguration.class)
+@AutoConfigureAfter(AtomicAwareNodeBlockingServiceFactoryAutoConfiguration.class)
+class CustomNodeBlockingFactoryConfiguration {
+    @Bean
+    public CustomNodeBlockingServiceFactoryPostProcessor customNodeBlockingServiceFactoryPostProcessor() {
+        new CustomNodeBlockingServiceFactoryPostProcessor();
+    }
+}
+
+class CustomNodeBlockingServiceFactoryPostProcessor extends BeanPostProcessor {
+    public Object postProcessAfterInitialization(Object bean, String beanName) {
+        Object result = bean;
+        if (bean instanceof NodeBlockingServiceFactory) {
+            result = new CustomNodeBlockingServiceFactory((NodeBlockingServiceFactory) bean);
+        }
+        return result;
+    }
+}
+
+class CustomNodeBlockingServiceFactory implements NodeBlockingServiceFactory {
+    NodeBlockingServiceFactory nodeBlockingServiceFactory;
+
+
+    public CustomNodeBlockingServiceFactory(NodeBlockingServiceFactory nodeBlockingServiceFactory) {
+        this.nodeBlockingServiceFactory = nodeBlockingServiceFactory;
+    }
+
+    // overridden methods
+}
+```
+
 ## we-starter-contract-client
 Contract client starter for working with contracts. \
 It has the following settings:

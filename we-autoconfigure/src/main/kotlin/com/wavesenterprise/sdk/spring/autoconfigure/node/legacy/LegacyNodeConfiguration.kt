@@ -46,6 +46,7 @@ class LegacyNodeConfiguration {
                         decode404 = legacyConfig.http.decode404,
                         connectTimeout = legacyConfig.http.connectTimeout.toLong(),
                         readTimeout = legacyConfig.http.readTimeout.toLong(),
+                        loggerLevel = legacyConfig.http.loggerLevel,
                     )
                 ),
                 grpc = NodeProperties.NodeConfig.Grpc(

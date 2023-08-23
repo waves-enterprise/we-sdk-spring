@@ -1,5 +1,7 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.node.properties
 
+import feign.Logger
+
 data class NodeProperties(
     val validationEnabled: Boolean,
     val config: MutableMap<String, NodeConfig>,
@@ -20,6 +22,7 @@ data class NodeProperties(
                 val decode404: Boolean,
                 val connectTimeout: Long,
                 val readTimeout: Long,
+                val loggerLevel: Logger.Level,
             )
         }
 

@@ -323,9 +323,9 @@ class ExampleService {
 
 ```
 The contract client call returns **ExecutionContext**, which, depending on the contract method being called, is returned with **CreateContractTx**(103) or **CallContractTx**(104).
-5. Дополнительно \
-Для реадктирования sign request, который отправляется при вызовах контракта, можно реализовать **ContractSignRequestCustomizer**. Пример использования [ContractSignRequestContractVersionCustomizer.kt](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fcontract%2Fcustomizer%2FContractSignRequestContractVersionCustomizer.kt) (Здача этого кастомайзера заключается в использовании активного контракта и его актульной версии).
-Для собственной реализации необходимо добавить в spring context bean of your implementation from **ContractSignRequestCustomizer**. 
+5. Additionally. \
+To edit the signing request that is sent when a contract is called, you can implement **ContractSignRequestCustomizer**. use [ContractSignRequestContractVersionCustomizer.kt](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fcontract%2Fcustomizer%2FContractSignRequestContractVersionCustomizer.kt) current version) .
+For custom implementation, you need to add your implementation's Spring context bean from **ContractSignRequestCustomizer**. 
 
 
 ## we-starter-atomic

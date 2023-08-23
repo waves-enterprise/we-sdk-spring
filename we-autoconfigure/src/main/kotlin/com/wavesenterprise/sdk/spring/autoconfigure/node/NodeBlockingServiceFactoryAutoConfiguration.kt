@@ -1,5 +1,6 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.node
 
+import com.wavesenterprise.sdk.node.client.blocking.cache.CachingNodeBlockingServiceFactory
 import com.wavesenterprise.sdk.node.client.blocking.cache.CachingNodeBlockingServiceFactoryBuilder
 import com.wavesenterprise.sdk.node.client.blocking.credentials.NodeCredentialsProvider
 import com.wavesenterprise.sdk.node.client.blocking.lb.LbServiceFactoryBuilder
@@ -50,42 +51,81 @@ class NodeBlockingServiceFactoryAutoConfiguration {
         rateLimiterProperties: RateLimiterProperties,
         nodeCredentialsProvider: NodeCredentialsProvider,
     ): NodeBlockingServiceFactory {
-        val rateLimiterClients: Map<String, RateLimitingServiceFactory> =
+        val clients: Map<String, NodeBlockingServiceFactory> =
             nodeProperties.config.map { (nodeAlias, nodeConfig) ->
                 nodeAlias to with(nodeConfig) {
-                    val feignClient = FeignNodeServiceFactory(
-                        FeignNodeClientParams(
-                            url = this.http.url,
-                            xApiKey = this.http.xApiKey,
-                            xPrivacyApiKey = this.http.xPrivacyApiKey,
-                            decode404 = this.http.feign.decode404,
-                            connectTimeout = this.http.feign.connectTimeout,
-                            readTimeout = this.http.feign.readTimeout,
+                    val defaultClient = configureFeignNodeBlockingServiceFactory()
+                    if (rateLimiterProperties.enabled) {
+                        configureRateLimitingWrapper(
+                            nodeBlockingServiceFactory = defaultClient,
+                            rateLimiterProperties = rateLimiterProperties,
                         )
-                    )
-                    val rateLimiter = DefaultRateLimiter(
-                        strategy = UtxPoolSizeLimitingStrategy(
-                            txService = feignClient.txService(),
-                            maxUtx = rateLimiterProperties.maxUtx,
-                        ),
-                        backOff = RandomDelayRateLimitingBackOff(
-                            minWaitMs = rateLimiterProperties.minWait.toMillis(),
-                            maxWaitMs = rateLimiterProperties.maxWait.toMillis(),
-                            maxWaitTotalMs = rateLimiterProperties.maxWaitTotal.toMillis(),
-                        ),
-                    )
-                    RateLimitingServiceFactory(
-                        nodeBlockingServiceFactory = feignClient,
-                        rateLimiter = rateLimiter,
-                    )
+                    } else defaultClient
                 }
             }.toMap()
-        val lbClient: LoadBalancingServiceFactory = LbServiceFactoryBuilder.builder()
-            .nodeCredentialsProvider(nodeCredentialsProvider)
-            .build(rateLimiterClients)
+        val client: LoadBalancingServiceFactory = configureLoadBalancingWrapper(
+            nodeCredentialsProvider = nodeCredentialsProvider,
+            clients = clients,
+        )
+        return if (cacheProperties.enabled) {
+            configureCachingWrapper(
+                cacheProperties = cacheProperties,
+                lbClient = client,
+            )
+        } else client
+    }
+
+    private fun NodeProperties.NodeConfig.configureFeignNodeBlockingServiceFactory() =
+        FeignNodeServiceFactory(
+            FeignNodeClientParams(
+                url = this.http.url,
+                xApiKey = this.http.xApiKey,
+                xPrivacyApiKey = this.http.xPrivacyApiKey,
+                decode404 = this.http.feign.decode404,
+                connectTimeout = this.http.feign.connectTimeout,
+                readTimeout = this.http.feign.readTimeout,
+                loggerLevel = this.http.feign.loggerLevel,
+            )
+        )
+
+    private fun configureCachingWrapper(
+        cacheProperties: CacheProperties,
+        lbClient: LoadBalancingServiceFactory
+    ): CachingNodeBlockingServiceFactory {
         return CachingNodeBlockingServiceFactoryBuilder.builder()
             .txCacheSize(cacheProperties.txCacheSize)
             .infoCacheSize(cacheProperties.policyItemInfoCacheSize).cacheDuration(cacheProperties.cacheDuration)
             .build(nodeBlockingServiceFactory = lbClient)
+    }
+
+    private fun configureRateLimitingWrapper(
+        nodeBlockingServiceFactory: NodeBlockingServiceFactory,
+        rateLimiterProperties: RateLimiterProperties,
+    ): RateLimitingServiceFactory {
+        val rateLimiter = DefaultRateLimiter(
+            strategy = UtxPoolSizeLimitingStrategy(
+                txService = nodeBlockingServiceFactory.txService(),
+                maxUtx = rateLimiterProperties.maxUtx,
+            ),
+            backOff = RandomDelayRateLimitingBackOff(
+                minWaitMs = rateLimiterProperties.minWait.toMillis(),
+                maxWaitMs = rateLimiterProperties.maxWait.toMillis(),
+                maxWaitTotalMs = rateLimiterProperties.maxWaitTotal.toMillis(),
+            ),
+        )
+        return RateLimitingServiceFactory(
+            nodeBlockingServiceFactory = nodeBlockingServiceFactory,
+            rateLimiter = rateLimiter,
+        )
+    }
+
+    private fun configureLoadBalancingWrapper(
+        nodeCredentialsProvider: NodeCredentialsProvider,
+        clients: Map<String, NodeBlockingServiceFactory>
+    ): LoadBalancingServiceFactory {
+        val lbClient: LoadBalancingServiceFactory = LbServiceFactoryBuilder.builder()
+            .nodeCredentialsProvider(nodeCredentialsProvider)
+            .build(clients)
+        return lbClient
     }
 }

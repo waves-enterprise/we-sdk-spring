@@ -8,7 +8,7 @@ import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFact
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeInfoService
 import com.wavesenterprise.sdk.node.client.blocking.privacy.PrivacyService
 import com.wavesenterprise.sdk.node.client.blocking.tx.TxService
-import com.wavesenterprise.sdk.node.client.blocking.util.UtilsService
+import com.wavesenterprise.sdk.node.client.blocking.util.NodeUtilsService
 import com.wavesenterprise.sdk.node.domain.Address
 import com.wavesenterprise.sdk.node.domain.DataEntry
 import com.wavesenterprise.sdk.node.domain.DataKey
@@ -154,7 +154,7 @@ class ContractBlockingClientFactoryConfigurationBootTest {
         private val blocksService: BlocksService = mockk()
         private val nodeInfoService: NodeInfoService = mockk()
         private val privacyService: PrivacyService = mockk()
-        private val utilsService: UtilsService = mockk()
+        private val nodeUtilsService: NodeUtilsService = mockk()
 
         @Bean
         fun txSigner(): TxSigner = txSigner
@@ -181,7 +181,7 @@ class ContractBlockingClientFactoryConfigurationBootTest {
         fun txSignerFactory(): TxServiceTxSignerFactory = txSignerFactory
 
         @Bean
-        fun utilsService(): UtilsService = utilsService
+        fun utilsService(): NodeUtilsService = nodeUtilsService
 
         @Bean
         fun nodeBlockingServiceFactory(): NodeBlockingServiceFactory = mockk<NodeBlockingServiceFactory>().also {
@@ -191,7 +191,7 @@ class ContractBlockingClientFactoryConfigurationBootTest {
             every { it.contractService() } returns contractService
             every { it.nodeInfoService() } returns nodeInfoService
             every { it.privacyService() } returns privacyService
-            every { it.utilService() } returns utilsService
+            every { it.nodeUtilsService() } returns nodeUtilsService
         }
     }
 

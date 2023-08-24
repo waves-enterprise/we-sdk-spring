@@ -1,7 +1,7 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.signer
 
-import com.wavesenterprise.sdk.node.client.blocking.credentials.NodeAddressProvider
 import com.wavesenterprise.sdk.node.client.blocking.credentials.NodeCredentialsProvider
+import com.wavesenterprise.sdk.node.client.blocking.credentials.SenderAddressProvider
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFactory
 import com.wavesenterprise.sdk.node.client.blocking.tx.TxService
 import com.wavesenterprise.sdk.spring.autoconfigure.node.service.NodeServicesAutoConfiguration
@@ -27,13 +27,13 @@ class WeTxServiceTxSignerAutoConfiguration {
     @ConditionalOnMissingBean
     fun txSigner(
         txService: TxService,
-        nodeAddressProvider: NodeAddressProvider,
+        senderAddressProvider: SenderAddressProvider,
         nodeCredentialsProvider: NodeCredentialsProvider,
     ): TxSigner = TxServiceTxSigner(
         txService = txService,
         signCredentialsProvider = object : SignCredentialsProvider {
             override fun credentials(): Credentials =
-                nodeAddressProvider.address().let { address ->
+                senderAddressProvider.address().let { address ->
                     Credentials(
                         senderAddress = address,
                         password = nodeCredentialsProvider.getPassword(address)

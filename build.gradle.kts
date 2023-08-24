@@ -92,9 +92,53 @@ allprojects {
 }
 
 subprojects {
+    apply(plugin = "maven-publish")
+
+    publishing {
+        repositories {
+            if (weMavenUser != null && weMavenPassword != null) {
+                maven {
+                    name = "WE-artifacts"
+                    afterEvaluate {
+                        url = uri(
+                            "$weMavenBasePath${
+                                if (project.version.toString()
+                                        .endsWith("-SNAPSHOT")
+                                ) "maven-snapshots" else "maven-releases"
+                            }"
+                        )
+                    }
+                    credentials {
+                        username = weMavenUser
+                        password = weMavenPassword
+                    }
+                }
+            }
+
+            if (sonaTypeMavenPassword != null && sonaTypeMavenUser != null) {
+                maven {
+                    name = "SonaType-maven-central-staging"
+                    val releasesUrl = uri("$sonaTypeBasePath/service/local/staging/deploy/maven2/")
+                    afterEvaluate {
+                        url = if (version.toString()
+                                .endsWith("SNAPSHOT")
+                        ) throw kotlin.Exception("shouldn't publish snapshot") else releasesUrl
+                    }
+                    credentials {
+                        username = sonaTypeMavenUser
+                        password = sonaTypeMavenPassword
+                    }
+                }
+            }
+        }
+    }
+}
+
+configure(
+    subprojects.filter { it.name != "we-sdk-spring-bom" }
+) {
     apply(plugin = "io.spring.dependency-management")
     apply(plugin = "kotlin")
-    apply(plugin = "maven-publish")
     apply(plugin = "signing")
     apply(plugin = "io.gitlab.arturbosch.detekt")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
@@ -154,41 +198,6 @@ subprojects {
     }
 
     publishing {
-        repositories {
-            if (weMavenUser != null && weMavenPassword != null) {
-                maven {
-                    name = "WE-artifacts"
-                    afterEvaluate {
-                        url = uri("$weMavenBasePath${
-                            if (project.version.toString()
-                                    .endsWith("-SNAPSHOT")
-                            ) "maven-snapshots" else "maven-releases"
-                        }")
-                    }
-                    credentials {
-                        username = weMavenUser
-                        password = weMavenPassword
-                    }
-                }
-            }
-
-            if (sonaTypeMavenPassword != null && sonaTypeMavenUser != null) {
-                maven {
-                    name = "SonaType-maven-central-staging"
-                    val releasesUrl = uri("$sonaTypeBasePath/service/local/staging/deploy/maven2/")
-                    afterEvaluate {
-                        url = if (version.toString()
-                                .endsWith("SNAPSHOT")
-                        ) throw kotlin.Exception("shouldn't publish snapshot") else releasesUrl
-                    }
-                    credentials {
-                        username = sonaTypeMavenUser
-                        password = sonaTypeMavenPassword
-                    }
-                }
-            }
-        }
-
         publications {
             create<MavenPublication>("mavenJava") {
                 from(components["java"])
@@ -247,33 +256,16 @@ subprojects {
 
     the<DependencyManagementExtension>().apply {
         imports {
-            mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
-            mavenBom("org.springframework.cloud:spring-cloud-dependencies:$springCloudVersion")
             mavenBom("org.springframework.boot:spring-boot-dependencies:$springBootVersion") {
                 bomProperty("kotlin.version", kotlinVersion)
             }
+            mavenBom("com.wavesenterprise:we-node-client-bom:$weNodeClientVersion")
+            mavenBom("com.wavesenterprise:we-contract-sdk-bom:$weContractSdkVersion")
+            mavenBom("io.github.openfeign:feign-bom:$feignVersion")
             mavenBom("org.junit:junit-bom:$junitBom")
         }
         dependencies {
-            dependency("com.wavesenterprise:we-node-client-grpc-blocking-client:$weNodeClientVersion")
-            dependency("com.wavesenterprise:we-node-client-feign-client:$weNodeClientVersion")
-            dependency("com.wavesenterprise:we-tx-signer-node:$weNodeClientVersion")
-            dependency("com.wavesenterprise:we-atomic:$weNodeClientVersion")
-            dependency("com.wavesenterprise:we-contract-sdk-blocking-client:$weContractSdkVersion")
-
             dependency("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:$kotlinCoroutinesVersion")
-
-            dependency("javax.annotation:javax.annotation-api:$javaxAnnotationApiVersion")
-
-            dependency("ch.qos.logback:logback-classic:$logbackVersion")
-
-            dependency("org.aspectj:aspectjweaver:$aspectjVersion")
-
-            dependency("io.github.openfeign:feign-core:$feignVersion")
-            dependency("io.github.openfeign:feign-jackson:$feignVersion")
-            dependency("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonModuleKotlin")
-
-            dependency("org.junit.platform:junit-platform-launcher:$junitPlatformLauncherVersion")
             dependency("io.mockk:mockk:$mockkVersion")
             dependency("com.ninja-squad:springmockk:$springMockkVersion")
         }

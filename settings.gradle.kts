@@ -39,5 +39,7 @@ include(
     "we-starters:we-starter-contract-client",
     "we-starters:we-starter-node-client",
     "we-starters:we-starter-atomic",
-    "we-starters:we-starter-tx-signer"
+    "we-starters:we-starter-tx-signer",
+
+    "we-sdk-spring-bom",
 )

@@ -48,7 +48,7 @@ class NodeServicesAutoConfigurationTest {
             every { it.contractService() } returns mockk()
             every { it.nodeInfoService() } returns mockk()
             every { it.privacyService() } returns mockk()
-            every { it.nodeUtilsService(g) } returns mockk()
+            every { it.nodeUtilsService() } returns mockk()
         }
     }
 }

@@ -244,7 +244,7 @@ class ContractBlockingClientFactoryConfigurationTest {
             every { it.contractService() } returns mockk()
             every { it.nodeInfoService() } returns mockk()
             every { it.privacyService() } returns mockk()
-            every { it.utilService() } returns mockk()
+            every { it.nodeUtilsService() } returns mockk()
         }
     }
 

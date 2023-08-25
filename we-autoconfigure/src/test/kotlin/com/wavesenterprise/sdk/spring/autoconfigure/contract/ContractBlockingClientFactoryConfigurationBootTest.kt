@@ -181,7 +181,7 @@ class ContractBlockingClientFactoryConfigurationBootTest {
         fun txSignerFactory(): TxServiceTxSignerFactory = txSignerFactory
 
         @Bean
-        fun utilsService(): NodeUtilsService = nodeUtilsService
+        fun nodeUtilsService(): NodeUtilsService = nodeUtilsService
 
         @Bean
         fun nodeBlockingServiceFactory(): NodeBlockingServiceFactory = mockk<NodeBlockingServiceFactory>().also {

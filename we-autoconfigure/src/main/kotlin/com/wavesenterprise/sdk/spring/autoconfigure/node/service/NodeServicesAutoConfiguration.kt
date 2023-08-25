@@ -40,6 +40,6 @@ class NodeServicesAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun utilsService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
+    fun nodeUtilsService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
         nodeBlockingServiceFactory.nodeUtilsService()
 }

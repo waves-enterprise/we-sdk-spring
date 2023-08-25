@@ -21,11 +21,11 @@ Gradle:
 implementation("com.wavesenterprise:we-starter-node-client")
 ```
 Maven:
-```
+```xml
 <dependency>
     <groupId>com.wavesenterprise</groupId>
     <artifactId>we-starter-node-client</artifactId>
-    <version>$version</version>
+    <version>${version}</version>
 </dependency>
 ```
 ### Configuration
@@ -73,45 +73,18 @@ node:
 
 _Note:_ For more information about wrappers, see the `we-node-client` documentation.
 
-An important element of this autoconfiguration is that in a separate configuration are the settings of the node services [NodeServicesAutoConfiguration](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fnode%2Fservice%2FNodeServicesAutoConfiguration.kt) . This configuration is performed after all wrappers for `NodeServiceFactory` counting the spring annotation `@AutoConfigureBefore(NodeServicesAutoConfiguration::class)` \
-This allows you to add client wrappers in client code via postprocessor and use node services via bean injection without a full client (An example of implementing a wrapper for atomics [AtomicAwareNodeBlockingServiceFactoryPostProcessor](we-autoconfigure%2Fsrc%2fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryPostProcessor.kt)) in [AtomicAwareNodeBlockingServiceFactoryAutoConfiguration](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryAutoConfiguration.kt).
+This allows you to add client wrappers in client code via postprocessor and use wrapped node services via bean injection (An example of implementing a wrapper for atomics [AtomicAwareNodeBlockingServiceFactoryPostProcessor](we-autoconfigure%2Fsrc%2fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryPostProcessor.kt)) in [AtomicAwareNodeBlockingServiceFactoryAutoConfiguration](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryAutoConfiguration.kt).
 ### Schema of wrappers
 #### Schema 
-```plantuml
-interface NodeBlockingServiceFactory {
-    TxService txService();
-    ContractService contractServiceContractService();
-    AddressService addressService();
-    NodeInfoService nodeInfoService();
-    PrivacyService privacyService();
-    BlocksService blocksService();
-    BlockchainEventsService blockchainEventsService();
-    UtilsService utilsService();
-}
-LoadBalancingServiceFactory o-- RateLimitingServiceFactory
-AtomicAwareNodeBlockingServiceFactory o-- LoadBalancingServiceFactory
-CustomNodeBlockingServiceFactory o-- AtomicAwareNodeBlockingServiceFactory
-RateLimitingServiceFactory o-- ActualImplementation
-LoadBalancingServiceFactory ..|> NodeBlockingServiceFactory
-AtomicAwareNodeBlockingServiceFactory ..|> NodeBlockingServiceFactory
-CustomNodeBlockingServiceFactory ..|> NodeBlockingServiceFactory
-RateLimitingServiceFactory ..|> NodeBlockingServiceFactory
-ActualImplementation ..|> NodeBlockingServiceFactory : node
-
-note bottom of ActualImplementation: Implementation with grpc or http connection
-note top of CustomNodeBlockingServiceFactory: Custom user wrapper implementation (optional)
-```
+![schema_of_warappers.png](puml%2Fschema_of_warappers.png) \
+[schema_of_warappers.puml](puml%2Fschema_of_warappers.puml)
 
 #### Schema of configuration ordering of wrappers
-```plantuml
-class AtomicAwareNodeBlockingServiceFactoryAutoConfiguration <<@Configuration>> <<@AutoConfigureAfter(NodeBlockingServiceFactoryAutoConfiguration::class)>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>>
-class NodeBlockingServiceFactoryAutoConfiguration <<@Configuration>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>>
-class NodeServicesAutoConfiguration <<@Configuration>>
-class CustomNodeBlockingFactoryConfiguration <<@Configuration>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>> <<@AutoConfigureAfter(AtomicAwareNodeBlockingServiceFactoryAutoConfiguration::class)>>
-note bottom of CustomNodeBlockingFactoryConfiguration : User wrapper of NodeBlockingServiceFactory with settings of ordering
-note bottom of NodeServicesAutoConfiguration : Executed last in order to provide bean of services from the latest wrapper
-```
+An important task of this configuration order is to provide services to the node after passing all the NodeBlockingServiceFactory wrappers.
+![order_of_autoconfiguration_wrappers.png](puml%2Forder_of_autoconfiguration_wrappers.png)
+[order_of_autoconfiguration_wrappers.puml](puml%2Forder_of_autoconfiguration_wrappers.puml)
 ##### Example of creation CustomNodeBlockingFactory
+Kotlin:
 ```kotlin
 @Configuration
 @AutoConfigureBefore(NodeServicesAutoConfiguration::class)
@@ -138,6 +111,7 @@ class CustomNodeBlockingServiceFactory(
     // overridden methods
 }
 ```
+Java:
 ```java
 @Configuration
 @AutoConfigureBefore(NodeServicesAutoConfiguration.class)
@@ -212,7 +186,34 @@ class ExampleContractImpl(
 ```
 Java:
 ```java
+public interface ExampleContract {
+   @ContractInit
+   void create();
 
+   @ContractAction
+   void call(String string);
+}
+
+public final class ExampleContractImpl implements ExampleContract {
+
+    private ContractState state;
+
+    public ContractState getState() {
+        return this.state;
+    }
+
+    public ExampleContractImpl(ContractState state) {
+        super();
+        this.state = state;
+    }
+    
+    public void create() {}
+
+    public void call(String string) {
+        this.state.put("EXAMPLE", string);
+    }
+    
+}
 ```
 
 To use it by the client, you need to do the following steps:
@@ -223,13 +224,13 @@ implementation("com.wavesenterprise:we-starter-contract-client:$version")
 // also, if necessary, you need to add a dependency on the project with the interface and implementation of the contract
 ```
 Maven:
-```
+```xml
 <dependency>
     <groupId>com.wavesenterprise</groupId>
     <artifactId>we-starter-contract-client</artifactId>
-    <version>$version</version>
+    <version>${version}</version>
 </dependency>
-// also, if necessary, you need to add a dependency on the project with the interface and implementation of the contract
+<! -- also, if necessary, you need to add a dependency on the project with the interface and implementation of the contract -->
 ```
 2. Add settings for the contract to the configuration file:
 ```yaml
@@ -458,11 +459,11 @@ Gradle:
 implementation("com.wavesenterprise:we-starter-tx-signer:$version")
 ```
 Maven:
-```
+```xml
 <dependency>
     <groupId>com.wavesenterprise</groupId>
     <artifactId>we-starter-tx-signer</artifactId>
-    <version>$version</version>
+    <version>${version}</version>
 </dependency>
 ```
 2. Adding a custom bean to the application context via the configuration to determine the address on whose behalf to sign transactions. For example, receiving a sender from a header:

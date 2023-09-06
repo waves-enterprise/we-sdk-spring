@@ -3,8 +3,8 @@
 Java/Kotlin SDK starter with autoconfigurations for contract and node client.
 Also contains autoconfigurations for signing SignRequests via tx-signer and logic for atomics.
 
-## Основное
-To start work, you need to add a dependency on the starter that you need to your project. \
+## General
+To start work, you need to add a dependency on the starter that you need to your project.  
 List of possible dependencies:
 * [we-starter-atomic](we-starters%2Fwe-starter-atomic)
 * [we-starter-contract-client](we-starters%2Fwe-starter-contract-client)
@@ -12,9 +12,9 @@ List of possible dependencies:
 * [we-starter-tx-signer](we-starters%2Fwe-starter-tx-signer)
 
 ## we-starter-node-client
-A starter that provides separate services for interacting with the node. \
+A starter that provides separate services for interacting with the node.  
 List of services: `TxService`, `ContractService`, `AddressService`, `NodeInfoService`, `PrivacyService`, `BlocksService`, `BlockchainEventsService`, `UtilsService`. The names of the services match the endpoints of the node api.
-The main element of the starter is the `NodeBlockingServiceFactory` interface, which allows you to wrap and redistribute service methods (for more information, see the `we-node-client` documentation). \
+The main element of the starter is the `NodeBlockingServiceFactory` interface, which allows you to wrap and redistribute service methods (for more information, see the `we-node-client` documentation).  
 ### Adding dependency
 Gradle:
 ```
@@ -29,54 +29,60 @@ Maven:
 </dependency>
 ```
 ### Configuration
-Before you start working with `we-starter-node-client`, you need to set values in the configuration file for working with the node. \
-The main setting is [NodeProperties](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fnode%2Fproperties%2FNodeProperties.kt) \
+Before you start working with `we-starter-node-client`, you need to set values in the configuration file for working with the node.  
+The main setting is [NodeProperties](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fnode%2Fproperties%2FNodeProperties.kt)  
 _Note:_ When switching from vst client, you need to add `node.config.node-0.legacy-mode: true`
 #### Example properties
 ```yaml
 node:
   config:
-    node-0:
-      http:
-        url: http://localhost:8080/node-0/
-        xApiKey: key
-        xPrivacyApiKey: key
-        feign:
+    node-0:                                 # node alias
+      http:                                 # http connection settings
+        url: http://localhost:8080/node-0/  # url of node
+        xApiKey: key                        # key for header for working with secure endpoints
+        xPrivacyApiKey: key                 # key for header for working with privacy endpoints
+        feign:                              # feign client settings
           decode404: true
           connectTimeout: 5000
           readTimeout: 5000
           loggerLevel: FULL
-  addresses:
-    address: password # {address}: {password}
+      grpc:                                 # grpc connection settings
+        address: localhost                  # node grpc address 
+        port: 6865                          # node grpc port
+        keepAliveTime: null
+        keepAliveWithoutCalls: null 
+  credentials-provider:                     # credentials for singing transactions
+    addresses:
+      address: password                     # {address}: {password}
 ```
 If necessary, you can configure the following default wrappers for NodeBlockingServiceFactory:
 * **RateLimitingServiceFactory** - configured in [RateLimiterProperties](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fnode%2Fproperties%2FRateLimiterProperties.kt);
 ```yaml
 node:
-  rate-limiter: # example with default values
-    enabled: true
-    maxUtx: 50 # value for limit requests if utx pool will be overflowing
-    minWaits: 1s # minimum waiting time for a repeated request to the node
-    maxWait: 3s #
-    maxWaitTotal: 10s
+  rate-limiter:         # example with default values
+    enabled: true   
+    maxUtx: 50          # value for limit requests if utx pool will be overflowing
+    minWaits: 1s        # minimum waiting time for a repeated request to the node
+    maxWait: 3s         # maximum waiting time for a repeated request to the node
+    maxWaitTotal: 10s   #
 ```
 * **CachingNodeBlockingServiceFactory** - configured in [CacheProperties](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fnode%2Fproperties%2FCacheProperties.kt). 
 ```yaml
 node:
-  cache: # example with default values
+  cache:                          # example with default values
     enabled: true
-    txCacheSize: 5000 # maximum number of transactions allowed to be stored in cache
-    policyItemInfoCacheSize: 500 # maximum number of policy item info allowed to be stored in cache
-    cacheDuration: 500s # time limit on cache storage
+    txCacheSize: 5000             # maximum number of transactions allowed to be stored in cache
+    policyItemInfoCacheSize: 500  # maximum number of policy item info allowed to be stored in cache
+    cacheDuration: 500s           # time limit on cache storage
 ```
-* **LoadBalancingServiceFactory** - Does not have separate settings. Works when clients are configured to more than one node; \
+* **LoadBalancingServiceFactory** - Does not have separate settings. Works when clients are configured to more than one node;  
 
 _Note:_ For more information about wrappers, see the `we-node-client` documentation.
 
 This allows you to add client wrappers in client code via postprocessor and use wrapped node services via bean injection (An example of implementing a wrapper for atomics [AtomicAwareNodeBlockingServiceFactoryPostProcessor](we-autoconfigure%2Fsrc%2fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryPostProcessor.kt)) in [AtomicAwareNodeBlockingServiceFactoryAutoConfiguration](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryAutoConfiguration.kt).
 ### Schema of wrappers
 #### Schema 
-![schema_of_warappers.png](puml%2Fschema_of_warappers.png) \
+![schema_of_warappers.png](puml%2Fschema_of_warappers.png)  
 [schema_of_warappers.puml](puml%2Fschema_of_warappers.puml)
 
 #### Schema of configuration ordering of wrappers
@@ -146,7 +152,7 @@ class CustomNodeBlockingServiceFactory implements NodeBlockingServiceFactory {
 ```
 
 ## we-starter-contract-client
-Contract client starter for working with contracts. \
+Contract client starter for working with contracts.  
 It has the following settings:
 ```yaml
 contracts:
@@ -161,7 +167,7 @@ contracts:
       contractCreatorAddress:
 ```
 ### Example of connection, configuration and usage:
-For example, a contract **ExampleContract** was created on the node (for more information, see the documentation **we-contract-sdk**). \
+For example, a contract **ExampleContract** was created on the node (for more information, see the documentation **we-contract-sdk**).  
 Kotlin:
 ```kotlin
 interface ExampleContract {
@@ -247,7 +253,7 @@ contracts:
       contractCreatorAddress: 3M3ybNZvLG7o7rnM4F7ViRPnDTfVggdfmRX
 ```
 _Note:_ When switching from vst-client, it is necessary to add to `contracts.legacy-mode: true`
-3. After specifying the settings for contracts, you need to add the @EnableContracts annotation to the main class or to the configuration class in your spring application: \
+3. After specifying the settings for contracts, you need to add the @EnableContracts annotation to the main class or to the configuration class in your spring application:  
 Kotlin:
 ```kotlin
 @EnableContracts(
@@ -293,7 +299,7 @@ Java:
 class ExampleConfiguration {}
 ```
 Additionally, if necessary, you can specify the names of your custom beans for `TxSigner, NodeBlockingServiceFactory, ConverterFactory` and disable local validation when calling the contract (does not send a transaction if validation fails).
-4. Using the contract: \
+4. Using the contract:  
 Kotlin:
 ```kotlin
 @Service
@@ -324,7 +330,7 @@ class ExampleService {
 
 ```
 The contract client call returns **ExecutionContext**, which, depending on the contract method being called, is returned with **CreateContractTx**(103) or **CallContractTx**(104).
-5. Additionally. \
+5. Additionally.  
 To edit the signing request that is sent when a contract is called, you can implement **ContractSignRequestCustomizer**. use [ContractSignRequestContractVersionCustomizer.kt](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fcontract%2Fcustomizer%2FContractSignRequestContractVersionCustomizer.kt) current version) .
 For custom implementation, you need to add your implementation's Spring context bean from **ContractSignRequestCustomizer**. 
 
@@ -332,7 +338,7 @@ For custom implementation, you need to add your implementation's Spring context 
 ## we-starter-atomic
 A starter that allows you to add one or more transactions into one atomic transaction.
 An atomic transaction puts other transactions in a container for their atomic execution.
-List of supported transactions by atomic tx - [Waves Enterprise Documentation](https://docs.wavesenterprise.com/ru/latest/description/transactions/tx-list.html#atomic-transaction) \
+List of supported transactions by atomic tx - [Waves Enterprise Documentation](https://docs.wavesenterprise.com/ru/latest/description/transactions/tx-list.html#atomic-transaction)  
 _Note_: to use `we-starter-atomic`, you need to add dependencies on `we-starter-node-client` and `we-starter-tx-tigner` (if there is a custom `nodeBlockingServiceFactory` and `txSigner` in the context - optional).
 ### Adding a dependency
 ```

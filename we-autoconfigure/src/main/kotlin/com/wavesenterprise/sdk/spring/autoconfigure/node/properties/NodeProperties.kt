@@ -29,7 +29,7 @@ data class NodeProperties(
         data class Grpc(
             val address: String,
             val port: Int,
-            val keepAliveTime: Long?,
+            val keepAliveTime: Long?, // todo parameters are not used
             val keepAliveWithoutCalls: Boolean?,
         )
     }

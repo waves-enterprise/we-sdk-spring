@@ -5,11 +5,11 @@ Also contains autoconfigurations for signing SignRequests via tx-signer and logi
 
 ## General
 To start using the library, you need to add a dependency on starters needed for your project.  
-List of possible dependencies:
-* [we-starter-atomic](we-starters%2Fwe-starter-atomic)
-* [we-starter-contract-client](we-starters%2Fwe-starter-contract-client)
-* [we-starter-node-client](we-starters%2Fwe-starter-node-client)
-* [we-starter-tx-signer](we-starters%2Fwe-starter-tx-signer)
+List of possible starters:
+* [we-starter-atomic](#we-starter-atomic)
+* [we-starter-contract-client](#we-starter-contract-client)
+* [we-starter-node-client](#we-starter-node-client)
+* [we-starter-tx-signer](#we-starter-tx-signer)
 
 ## we-starter-node-client
 A starter that provides separate services for interacting with the node.  
@@ -86,7 +86,7 @@ node:
 ### Wrapping Node Services
 The starter design allows you to add client wrappers in client code via post processors and use node services with additional logic.
 
-You can find an example of implemented wrapper in [AtomicAwareNodeBlockingServiceFactoryPostProcessor](we-autoconfigure%2Fsrc%2fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryPostProcessor.kt)) 
+You can find an example of implemented wrapper in [AtomicAwareNodeBlockingServiceFactoryPostProcessor](we-autoconfigure%2Fsrc%2fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryPostProcessor.kt) 
 used by [AtomicAwareNodeBlockingServiceFactoryAutoConfiguration](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryAutoConfiguration.kt).
 #### Schema of wrapping order 
 ![schema_of_warappers.png](puml%2Fschema_of_warappers.png)  

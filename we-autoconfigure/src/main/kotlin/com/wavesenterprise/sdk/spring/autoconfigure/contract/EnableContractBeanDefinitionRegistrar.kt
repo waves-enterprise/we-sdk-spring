@@ -37,9 +37,9 @@ class EnableContractBeanDefinitionRegistrar : ImportBeanDefinitionRegistrar {
         val impl = attrs.getClass<Class<*>>(Contract::impl.name)
         val name = attrs.getString(Contract::name.name)
 
-        val txSigner = attrs.getString(Contract::txSigner.name)
-        val nodeBlockingServiceFactory = attrs.getString(Contract::nodeBlockingServiceFactory.name)
-        val converterFactory = attrs.getString(Contract::converterFactory.name)
+        val txSignerBeanRef = attrs.getString(Contract::txSignerBeanRef.name)
+        val nodeBlockingServiceFactoryBeanRef = attrs.getString(Contract::nodeBlockingServiceFactoryBeanRef.name)
+        val converterFactoryBeanRef = attrs.getString(Contract::converterFactoryBeanRef.name)
 
         val localValidationEnabled = attrs.getBoolean(Contract::localValidationEnabled.name)
 
@@ -51,9 +51,9 @@ class EnableContractBeanDefinitionRegistrar : ImportBeanDefinitionRegistrar {
             api = api,
             impl = impl,
             name = name,
-            txSignerBeanName = txSigner,
-            nodeBlockingServiceFactoryBeanName = nodeBlockingServiceFactory,
-            converterFactoryBeanName = converterFactory,
+            txSignerBeanName = txSignerBeanRef,
+            nodeBlockingServiceFactoryBeanName = nodeBlockingServiceFactoryBeanRef,
+            converterFactoryBeanName = converterFactoryBeanRef,
             localValidationEnabled = localValidationEnabled,
         )
     }

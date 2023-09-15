@@ -30,6 +30,7 @@ class NodePropertiesConfiguration {
                         decode404 = config.http.feign.decode404,
                         connectTimeout = config.http.feign.connectTimeout,
                         readTimeout = config.http.feign.readTimeout,
+                        loggerLevel = config.http.feign.loggerLevel,
                     )
                 ),
                 grpc = NodeProperties.NodeConfig.Grpc(

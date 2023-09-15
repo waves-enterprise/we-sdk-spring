@@ -1,5 +1,6 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.node.properties
 
+import feign.Logger
 import org.springframework.boot.context.properties.ConstructorBinding
 
 data class NodeConfigurationProperties(
@@ -28,6 +29,7 @@ data class NodeConfigurationProperties(
                 val decode404: Boolean = true,
                 val connectTimeout: Long = 5000,
                 val readTimeout: Long = 3000,
+                val loggerLevel: Logger.Level = Logger.Level.FULL,
             )
         }
 

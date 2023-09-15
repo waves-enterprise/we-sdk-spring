@@ -1,5 +1,7 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.node.properties
 
+import feign.Logger
+
 data class NodeProperties(
     val validationEnabled: Boolean,
     val config: MutableMap<String, NodeConfig>,
@@ -20,13 +22,14 @@ data class NodeProperties(
                 val decode404: Boolean,
                 val connectTimeout: Long,
                 val readTimeout: Long,
+                val loggerLevel: Logger.Level,
             )
         }
 
         data class Grpc(
             val address: String,
             val port: Int,
-            val keepAliveTime: Long?,
+            val keepAliveTime: Long?, // todo parameters are not used
             val keepAliveWithoutCalls: Boolean?,
         )
     }

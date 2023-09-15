@@ -1,0 +1,16 @@
+@startuml diagram
+!theme materia
+class AtomicAwareNodeBlockingServiceFactoryAutoConfiguration <<@Configuration>> <<@AutoConfigureAfter(NodeBlockingServiceFactoryAutoConfiguration::class)>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>>
+class NodeBlockingServiceFactoryAutoConfiguration <<@Configuration>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>>
+class NodeServicesAutoConfiguration <<@Configuration>>
+class CustomNodeBlockingFactoryConfiguration <<@Configuration>> <<@AutoConfigureBefore(NodeServicesAutoConfiguration::class)>> <<@AutoConfigureAfter(AtomicAwareNodeBlockingServiceFactoryAutoConfiguration::class)>>
+
+NodeBlockingServiceFactoryAutoConfiguration --> AtomicAwareNodeBlockingServiceFactoryAutoConfiguration
+AtomicAwareNodeBlockingServiceFactoryAutoConfiguration --> CustomNodeBlockingFactoryConfiguration
+CustomNodeBlockingFactoryConfiguration --> NodeServicesAutoConfiguration
+
+note left of NodeBlockingServiceFactoryAutoConfiguration : The configuration creates a client to the node by default and, based on the settings, wraps it if necessary (in rate limiter, caching)
+note left of AtomicAwareNodeBlockingServiceFactoryAutoConfiguration : Wraps the client after NodeBlockingServiceFactoryAutoConfiguration to work with atomic
+note left of CustomNodeBlockingFactoryConfiguration : User wrapper of NodeBlockingServiceFactory with settings of ordering
+note left of NodeServicesAutoConfiguration : Executed last in order to provide bean of services from the latest wrapper
+@enduml

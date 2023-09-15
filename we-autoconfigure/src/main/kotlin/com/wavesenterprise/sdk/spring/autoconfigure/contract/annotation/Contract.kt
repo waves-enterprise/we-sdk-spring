@@ -7,9 +7,9 @@ annotation class Contract(
     val impl: KClass<*>,
     val name: String,
 
-    val txSigner: String = "",
-    val nodeBlockingServiceFactory: String = "",
-    val converterFactory: String = "",
+    val txSignerBeanRef: String = "",
+    val nodeBlockingServiceFactoryBeanRef: String = "",
+    val converterFactoryBeanRef: String = "",
 
     val localValidationEnabled: Boolean = true,
 )

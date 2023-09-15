@@ -89,12 +89,12 @@ The starter design allows you to add client wrappers in client code via post pro
 You can find an example of implemented wrapper in [AtomicAwareNodeBlockingServiceFactoryPostProcessor](we-autoconfigure%2Fsrc%2fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryPostProcessor.kt) 
 used by [AtomicAwareNodeBlockingServiceFactoryAutoConfiguration](we-autoconfigure%2Fsrc%2Fmain%2Fkotlin%2Fcom%2Fwavesenterprise%2Fsdk%2Fspring%2Fautoconfigure%2Fatomic%2FAtomicAwareNodeBlockingServiceFactoryAutoConfiguration.kt).
 #### Schema of wrapping order 
-![schema_of_warappers.png](puml%2Fschema_of_warappers.png)  
+![schema_of_warappers.svg](puml%2Fschema_of_warappers.svg)  
 [schema_of_warappers.puml](puml%2Fschema_of_warappers.puml)
 
 #### Schema showing order of autoconfiguration for wrappers
 An important task of this configuration order is to provide services to the node after being processed by all NodeBlockingServiceFactory wrappers.
-![order_of_autoconfiguration_wrappers.png](puml%2Forder_of_autoconfiguration_wrappers.png)
+![order_of_autoconfiguration_wrappers.svg](puml%2Forder_of_autoconfiguration_wrappers.svg)
 [order_of_autoconfiguration_wrappers.puml](puml%2Forder_of_autoconfiguration_wrappers.puml)
 ##### Example of creating a CustomNodeBlockingServiceFactory
 Kotlin:

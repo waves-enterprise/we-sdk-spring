@@ -1,5 +1,5 @@
 @startuml diagram
-
+!theme materia
 interface NodeBlockingServiceFactory {
     TxService txService();
     ContractService contractServiceContractService();

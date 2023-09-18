@@ -19,6 +19,7 @@ class LegacyContractsPropertiesConfiguration {
         ContractsProperties(
             config = this.config.map { (contractName, config) ->
                 contractName to ContractsProperties.Properties(
+                    validationEnabled = config.validationEnabled,
                     contractId = config.id,
                     fee = config.fee ?: this.fee,
                     image = config.image,

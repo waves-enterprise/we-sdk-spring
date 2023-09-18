@@ -9,7 +9,7 @@ data class NodeProperties(
 
     data class NodeConfig(
         val http: Http,
-        val grpc: Grpc,
+        val grpc: Grpc? = null,
     ) {
 
         data class Http(

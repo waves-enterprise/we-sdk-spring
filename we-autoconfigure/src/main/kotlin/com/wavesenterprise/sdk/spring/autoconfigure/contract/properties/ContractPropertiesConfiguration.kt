@@ -20,6 +20,7 @@ class ContractPropertiesConfiguration {
     ): ContractsProperties = ContractsProperties(
         config = contractsConfigurationProperties.config.map { (contractName, config) ->
             contractName to ContractsProperties.Properties(
+                validationEnabled = config.validationEnabled,
                 contractId = config.contractId,
                 version = config.version,
                 fee = config.fee,

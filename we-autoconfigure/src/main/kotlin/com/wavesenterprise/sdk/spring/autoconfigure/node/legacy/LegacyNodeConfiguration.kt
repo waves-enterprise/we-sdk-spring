@@ -49,12 +49,14 @@ class LegacyNodeConfiguration {
                         loggerLevel = legacyConfig.http.loggerLevel,
                     )
                 ),
-                grpc = NodeProperties.NodeConfig.Grpc(
-                    address = legacyConfig.grpc.address,
-                    port = legacyConfig.grpc.port,
-                    keepAliveTime = legacyConfig.grpc.keepAliveTime,
-                    keepAliveWithoutCalls = legacyConfig.grpc.keepAliveWithoutCalls,
-                )
+                grpc = legacyConfig.grpc?.let {
+                    NodeProperties.NodeConfig.Grpc(
+                        address = it.address,
+                        port = it.port,
+                        keepAliveTime = it.keepAliveTime,
+                        keepAliveWithoutCalls = it.keepAliveWithoutCalls,
+                    )
+                }
             )
         }.toMap(destination = mutableMapOf())
     )

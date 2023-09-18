@@ -2,10 +2,10 @@ package com.wavesenterprise.sdk.spring.autoconfigure.contract
 
 import com.wavesenterprise.sdk.atomic.AtomicAwareTxSigner
 import com.wavesenterprise.sdk.contract.client.invocation.factory.ContractBlockingClientFactory
-import com.wavesenterprise.sdk.contract.client.invocation.factory.ContractClientParams
 import com.wavesenterprise.sdk.contract.core.converter.factory.ConverterFactory
 import com.wavesenterprise.sdk.contract.core.state.LocalValidationContextManager
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.properties.ContractConfigurationPropertiesForSignRequestBuilderFactory
+import com.wavesenterprise.sdk.spring.autoconfigure.contract.validation.ApplicationContextAwareContractValidation
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.AbstractBeanDefinition
@@ -36,7 +36,12 @@ class ContractBlockingClientFactoryRegistryPostProcessor(
             defBuilder.apply {
                 addConstructorArgValue(beanInfo.impl)
                 addConstructorArgValue(beanInfo.api)
-                addConstructorArgValue(ContractClientParams(beanInfo.localValidationEnabled))
+                addConstructorArgValue(
+                    ApplicationContextAwareContractValidation(
+                        contractKey = beanInfo.name,
+                        applicationContext = applicationContext,
+                    )
+                )
                 addConstructorArgValue(contractSignRequestBuilderFactory)
 
                 beanInfo.txSigner?.let {

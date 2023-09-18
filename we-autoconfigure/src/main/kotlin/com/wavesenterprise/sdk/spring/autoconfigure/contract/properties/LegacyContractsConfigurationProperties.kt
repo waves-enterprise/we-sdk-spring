@@ -16,5 +16,6 @@ data class LegacyContractsConfigurationProperties(
         val image: String? = null,
         val imageHash: String? = null,
         val autoUpdate: Boolean = false,
+        val validationEnabled: Boolean = true,
     )
 }

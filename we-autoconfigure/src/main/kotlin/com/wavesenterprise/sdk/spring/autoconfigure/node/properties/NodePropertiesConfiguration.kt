@@ -33,12 +33,14 @@ class NodePropertiesConfiguration {
                         loggerLevel = config.http.feign.loggerLevel,
                     )
                 ),
-                grpc = NodeProperties.NodeConfig.Grpc(
-                    address = config.grpc.address,
-                    port = config.grpc.port,
-                    keepAliveTime = config.grpc.keepAliveTime,
-                    keepAliveWithoutCalls = config.grpc.keepAliveWithoutCalls,
-                )
+                grpc = config.grpc?.let {
+                    NodeProperties.NodeConfig.Grpc(
+                        address = it.address,
+                        port = it.port,
+                        keepAliveTime = it.keepAliveTime,
+                        keepAliveWithoutCalls = it.keepAliveWithoutCalls,
+                    )
+                }
             )
         }.toMap(destination = mutableMapOf())
     )

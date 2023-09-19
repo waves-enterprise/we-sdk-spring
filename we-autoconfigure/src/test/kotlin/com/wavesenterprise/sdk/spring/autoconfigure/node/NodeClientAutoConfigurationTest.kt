@@ -4,6 +4,7 @@ import com.wavesenterprise.sdk.node.client.blocking.credentials.NodeCredentialsP
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFactory
 import com.wavesenterprise.sdk.node.domain.Address
 import com.wavesenterprise.sdk.node.domain.Password
+import com.wavesenterprise.sdk.spring.autoconfigure.node.holder.NodeBlockingServiceFactoryMapHolder
 import com.wavesenterprise.sdk.spring.autoconfigure.node.properties.NodeProperties
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -94,6 +95,21 @@ class NodeClientAutoConfigurationTest {
                 assertThat(context).hasSingleBean(NodeProperties::class.java)
                 val nodeProperties = context.getBean(NodeProperties::class.java)
                 assertThat(nodeProperties.config).isEmpty()
+            }
+    }
+
+    @Test
+    fun `should create and fill NodeBlockingServiceFactoryHolder bean`() {
+        applicationContextRunner
+            .withPropertyValues(
+                "node.config.test-node-0.http.url:testurl",
+                "node.config.test-node-1.http.url:testurl"
+            )
+            .run { context ->
+                assertThat(context).hasSingleBean(NodeBlockingServiceFactoryMapHolder::class.java)
+                context.getBean(NodeBlockingServiceFactoryMapHolder::class.java).also {
+                    assertThat(it.getAll().size).isEqualTo(2)
+                }
             }
     }
 }

@@ -20,7 +20,7 @@ data class LegacyNodeConfigurationProperties(
         val nodeOwnerAddress: String? = null,
         val keyStorePassword: String? = null,
         val http: Http = Http(),
-        val grpc: Grpc = Grpc(),
+        val grpc: Grpc? = null,
     ) {
         data class Http(
             val url: String = "",

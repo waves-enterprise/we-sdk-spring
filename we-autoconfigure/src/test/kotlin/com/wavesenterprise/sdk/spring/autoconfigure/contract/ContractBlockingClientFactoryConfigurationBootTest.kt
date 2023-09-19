@@ -135,13 +135,11 @@ class ContractBlockingClientFactoryConfigurationBootTest {
                 api = TestContractOne::class,
                 impl = TestContractOneImpl::class,
                 name = "test-one",
-                localValidationEnabled = false,
             ),
             Contract(
                 api = TestContractTwo::class,
                 impl = TestContractTwoImpl::class,
                 name = "test-two",
-                localValidationEnabled = false,
             ),
         ]
     )

@@ -3,5 +3,6 @@ com.wavesenterprise.sdk.spring.autoconfigure.node.NodeBlockingServiceFactoryAuto
 com.wavesenterprise.sdk.spring.autoconfigure.contract.ContractAutoConfiguration,\
 com.wavesenterprise.sdk.spring.autoconfigure.atomic.AtomicAwareNodeBlockingServiceFactoryAutoConfiguration,\
 com.wavesenterprise.sdk.spring.autoconfigure.node.service.NodeServicesAutoConfiguration,\
+com.wavesenterprise.sdk.spring.autoconfigure.node.validator.NodeConnectionValidatorConfiguration, \
 com.wavesenterprise.sdk.spring.autoconfigure.atomic.AtomicTxSignerAutoConfiguration,\
 com.wavesenterprise.sdk.spring.autoconfigure.signer.WeTxServiceTxSignerAutoConfiguration

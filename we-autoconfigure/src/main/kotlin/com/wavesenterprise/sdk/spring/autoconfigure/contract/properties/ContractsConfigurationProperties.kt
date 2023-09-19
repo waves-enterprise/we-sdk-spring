@@ -16,6 +16,7 @@ data class ContractsConfigurationProperties(
         val image: String? = null,
         val imageHash: String? = null,
         val autoUpdate: AutoUpdate,
+        val validationEnabled: Boolean = true,
     ) {
         class AutoUpdate(
             val enabled: Boolean = false,

@@ -1,5 +1,6 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.node
 
+import com.google.common.collect.ImmutableMap
 import com.wavesenterprise.sdk.node.client.blocking.cache.CachingNodeBlockingServiceFactory
 import com.wavesenterprise.sdk.node.client.blocking.cache.CachingNodeBlockingServiceFactoryBuilder
 import com.wavesenterprise.sdk.node.client.blocking.credentials.NodeCredentialsProvider
@@ -12,6 +13,12 @@ import com.wavesenterprise.sdk.node.client.blocking.ratelimit.RateLimitingServic
 import com.wavesenterprise.sdk.node.client.blocking.ratelimit.UtxPoolSizeLimitingStrategy
 import com.wavesenterprise.sdk.node.client.feign.FeignNodeClientParams
 import com.wavesenterprise.sdk.node.client.feign.factory.FeignNodeServiceFactory
+import com.wavesenterprise.sdk.node.client.grpc.blocking.GrpcNodeClientParams
+import com.wavesenterprise.sdk.node.client.grpc.blocking.factory.GrpcNodeServiceFactoryFactory
+import com.wavesenterprise.sdk.spring.autoconfigure.node.holder.DefaultNodeBlockingServiceFactoryMapHolder
+import com.wavesenterprise.sdk.spring.autoconfigure.node.holder.DefaultNodeClient
+import com.wavesenterprise.sdk.spring.autoconfigure.node.holder.NodeBlockingServiceFactoryMapHolder
+import com.wavesenterprise.sdk.spring.autoconfigure.node.holder.NodeClient
 import com.wavesenterprise.sdk.spring.autoconfigure.node.legacy.LegacyNodeConfiguration
 import com.wavesenterprise.sdk.spring.autoconfigure.node.properties.CacheProperties
 import com.wavesenterprise.sdk.spring.autoconfigure.node.properties.NodeProperties
@@ -45,57 +52,67 @@ class NodeBlockingServiceFactoryAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun nodeBlockingServiceFactory(
+    fun nodeBlockingServiceFactoryHolder(
         nodeProperties: NodeProperties,
+    ) = DefaultNodeBlockingServiceFactoryMapHolder(
+        map = creteClients(nodeProperties),
+    )
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun nodeBlockingServiceFactory(
         cacheProperties: CacheProperties,
         rateLimiterProperties: RateLimiterProperties,
         nodeCredentialsProvider: NodeCredentialsProvider,
+        nodeBlockingServiceFactoryMapHolder: NodeBlockingServiceFactoryMapHolder,
     ): NodeBlockingServiceFactory {
-        val clients: Map<String, NodeBlockingServiceFactory> =
-            nodeProperties.config.map { (nodeAlias, nodeConfig) ->
-                nodeAlias to with(nodeConfig) {
-                    val defaultClient = configureFeignNodeBlockingServiceFactory()
-                    if (rateLimiterProperties.enabled) {
-                        configureRateLimitingWrapper(
-                            nodeBlockingServiceFactory = defaultClient,
-                            rateLimiterProperties = rateLimiterProperties,
-                        )
-                    } else defaultClient
-                }
+        val rateLimiterClients: Map<String, NodeBlockingServiceFactory> =
+            nodeBlockingServiceFactoryMapHolder.getAll().map { (nodeAlias, nodeClient) ->
+                nodeAlias to if (rateLimiterProperties.enabled) {
+                    configureRateLimitingWrapper(
+                        nodeBlockingServiceFactory = nodeClient.getHttpClient(),
+                        rateLimiterProperties = rateLimiterProperties,
+                    )
+                } else nodeClient.getHttpClient()
             }.toMap()
-        val client: LoadBalancingServiceFactory = configureLoadBalancingWrapper(
-            nodeCredentialsProvider = nodeCredentialsProvider,
-            clients = clients,
-        )
+        val lbClient: LoadBalancingServiceFactory = LbServiceFactoryBuilder.builder()
+            .nodeCredentialsProvider(nodeCredentialsProvider)
+            .build(rateLimiterClients)
         return if (cacheProperties.enabled) {
             configureCachingWrapper(
                 cacheProperties = cacheProperties,
-                lbClient = client,
+                lbClient = lbClient,
             )
-        } else client
+        } else lbClient
     }
 
-    private fun NodeProperties.NodeConfig.configureFeignNodeBlockingServiceFactory() =
-        FeignNodeServiceFactory(
-            FeignNodeClientParams(
-                url = this.http.url,
-                xApiKey = this.http.xApiKey,
-                xPrivacyApiKey = this.http.xPrivacyApiKey,
-                decode404 = this.http.feign.decode404,
-                connectTimeout = this.http.feign.connectTimeout,
-                readTimeout = this.http.feign.readTimeout,
-                loggerLevel = this.http.feign.loggerLevel,
+    private fun creteClients(nodeProperties: NodeProperties): ImmutableMap<String, NodeClient> {
+        val map = mutableMapOf<String, NodeClient>()
+        nodeProperties.config.forEach { (nodeAlias, nodeConfig) ->
+            map[nodeAlias] = DefaultNodeClient(
+                http = FeignNodeServiceFactory(
+                    FeignNodeClientParams(
+                        url = nodeConfig.http.url,
+                        xApiKey = nodeConfig.http.xApiKey,
+                        xPrivacyApiKey = nodeConfig.http.xPrivacyApiKey,
+                        decode404 = nodeConfig.http.feign.decode404,
+                        connectTimeout = nodeConfig.http.feign.connectTimeout,
+                        readTimeout = nodeConfig.http.feign.readTimeout,
+                    )
+                ),
+                grpc = nodeConfig.grpc?.let {
+                    GrpcNodeServiceFactoryFactory.createClient(
+                        grpcProperties = GrpcNodeClientParams(
+                            address = nodeConfig.grpc.address,
+                            port = nodeConfig.grpc.port,
+                            keepAliveTime = nodeConfig.grpc.keepAliveTime,
+                            keepAliveWithoutCalls = nodeConfig.grpc.keepAliveWithoutCalls,
+                        )
+                    )
+                }
             )
-        )
-
-    private fun configureCachingWrapper(
-        cacheProperties: CacheProperties,
-        lbClient: LoadBalancingServiceFactory
-    ): CachingNodeBlockingServiceFactory {
-        return CachingNodeBlockingServiceFactoryBuilder.builder()
-            .txCacheSize(cacheProperties.txCacheSize)
-            .infoCacheSize(cacheProperties.policyItemInfoCacheSize).cacheDuration(cacheProperties.cacheDuration)
-            .build(nodeBlockingServiceFactory = lbClient)
+        }
+        return ImmutableMap.copyOf(map)
     }
 
     private fun configureRateLimitingWrapper(
@@ -119,13 +136,13 @@ class NodeBlockingServiceFactoryAutoConfiguration {
         )
     }
 
-    private fun configureLoadBalancingWrapper(
-        nodeCredentialsProvider: NodeCredentialsProvider,
-        clients: Map<String, NodeBlockingServiceFactory>
-    ): LoadBalancingServiceFactory {
-        val lbClient: LoadBalancingServiceFactory = LbServiceFactoryBuilder.builder()
-            .nodeCredentialsProvider(nodeCredentialsProvider)
-            .build(clients)
-        return lbClient
+    private fun configureCachingWrapper(
+        cacheProperties: CacheProperties,
+        lbClient: LoadBalancingServiceFactory
+    ): CachingNodeBlockingServiceFactory {
+        return CachingNodeBlockingServiceFactoryBuilder.builder()
+            .txCacheSize(cacheProperties.txCacheSize)
+            .infoCacheSize(cacheProperties.policyItemInfoCacheSize).cacheDuration(cacheProperties.cacheDuration)
+            .build(nodeBlockingServiceFactory = lbClient)
     }
 }

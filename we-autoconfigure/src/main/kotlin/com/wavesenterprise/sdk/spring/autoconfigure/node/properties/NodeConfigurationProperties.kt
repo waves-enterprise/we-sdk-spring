@@ -15,7 +15,7 @@ data class NodeConfigurationProperties(
     @ConstructorBinding
     data class NodeConfig(
         val http: Http = Http(),
-        val grpc: Grpc = Grpc(),
+        val grpc: Grpc? = null,
     ) {
 
         data class Http(

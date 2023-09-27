@@ -1,11 +1,11 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.contract
 
-import com.wavesenterprise.sdk.atomic.AtomicAwareTxSigner
 import com.wavesenterprise.sdk.contract.client.invocation.factory.ContractBlockingClientFactory
 import com.wavesenterprise.sdk.contract.core.converter.factory.ConverterFactory
 import com.wavesenterprise.sdk.contract.core.state.LocalValidationContextManager
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.properties.ContractConfigurationPropertiesForSignRequestBuilderFactory
 import com.wavesenterprise.sdk.spring.autoconfigure.contract.validation.ApplicationContextAwareContractValidation
+import com.wavesenterprise.sdk.tx.signer.TxSigner
 import org.springframework.beans.BeansException
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory
 import org.springframework.beans.factory.support.AbstractBeanDefinition
@@ -49,7 +49,7 @@ class ContractBlockingClientFactoryRegistryPostProcessor(
                 } ?: beanInfo.txSignerBeanName?.let {
                     if (it.isBlank()) null else addConstructorArgReference(it)
                 } ?: try {
-                    addConstructorArgValue(applicationContext.getBean(AtomicAwareTxSigner::class.java))
+                    addConstructorArgValue(applicationContext.getBean(TxSigner::class.java))
                 } catch (ex: BeansException) {
                     addConstructorArgReference("txSigner")
                 }

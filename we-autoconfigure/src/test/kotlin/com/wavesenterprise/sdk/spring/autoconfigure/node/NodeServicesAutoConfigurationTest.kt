@@ -1,10 +1,13 @@
 package com.wavesenterprise.sdk.spring.autoconfigure.node
 
 import com.wavesenterprise.sdk.node.client.blocking.address.AddressService
+import com.wavesenterprise.sdk.node.client.blocking.alias.AliasService
 import com.wavesenterprise.sdk.node.client.blocking.blocks.BlocksService
 import com.wavesenterprise.sdk.node.client.blocking.contract.ContractService
+import com.wavesenterprise.sdk.node.client.blocking.event.BlockchainEventsService
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFactory
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeInfoService
+import com.wavesenterprise.sdk.node.client.blocking.pki.PkiService
 import com.wavesenterprise.sdk.node.client.blocking.privacy.PrivacyService
 import com.wavesenterprise.sdk.node.client.blocking.tx.TxService
 import com.wavesenterprise.sdk.node.client.blocking.util.NodeUtilsService
@@ -28,12 +31,15 @@ class NodeServicesAutoConfigurationTest {
         applicationContextRunner.withUserConfiguration(TestConfiguration::class.java)
             .run { context ->
                 assertThat(context).hasSingleBean(AddressService::class.java)
+                assertThat(context).hasSingleBean(AliasService::class.java)
+                assertThat(context).hasSingleBean(BlockchainEventsService::class.java)
                 assertThat(context).hasSingleBean(BlocksService::class.java)
                 assertThat(context).hasSingleBean(ContractService::class.java)
                 assertThat(context).hasSingleBean(NodeInfoService::class.java)
+                assertThat(context).hasSingleBean(NodeUtilsService::class.java)
+                assertThat(context).hasSingleBean(PkiService::class.java)
                 assertThat(context).hasSingleBean(PrivacyService::class.java)
                 assertThat(context).hasSingleBean(TxService::class.java)
-                assertThat(context).hasSingleBean(NodeUtilsService::class.java)
             }
     }
 
@@ -42,13 +48,16 @@ class NodeServicesAutoConfigurationTest {
 
         @Bean
         fun nodeBlockingServiceFactory(): NodeBlockingServiceFactory = mockk<NodeBlockingServiceFactory>().also {
-            every { it.txService() } returns mockk()
             every { it.addressService() } returns mockk()
+            every { it.aliasService() } returns mockk()
+            every { it.blockchainEventsService() } returns mockk()
             every { it.blocksService() } returns mockk()
             every { it.contractService() } returns mockk()
             every { it.nodeInfoService() } returns mockk()
-            every { it.privacyService() } returns mockk()
             every { it.nodeUtilsService() } returns mockk()
+            every { it.pkiService() } returns mockk()
+            every { it.privacyService() } returns mockk()
+            every { it.txService() } returns mockk()
         }
     }
 }

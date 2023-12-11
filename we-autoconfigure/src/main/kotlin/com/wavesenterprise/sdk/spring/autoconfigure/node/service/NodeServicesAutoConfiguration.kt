@@ -20,11 +20,6 @@ class NodeServicesAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    fun blockchainEventsService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
-        nodeBlockingServiceFactory.blockchainEventsService()
-
-    @Bean
-    @ConditionalOnMissingBean
     fun blocksService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
         nodeBlockingServiceFactory.blocksService()
 

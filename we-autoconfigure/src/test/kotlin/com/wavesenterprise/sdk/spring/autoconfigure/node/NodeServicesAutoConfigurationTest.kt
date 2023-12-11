@@ -4,7 +4,6 @@ import com.wavesenterprise.sdk.node.client.blocking.address.AddressService
 import com.wavesenterprise.sdk.node.client.blocking.alias.AliasService
 import com.wavesenterprise.sdk.node.client.blocking.blocks.BlocksService
 import com.wavesenterprise.sdk.node.client.blocking.contract.ContractService
-import com.wavesenterprise.sdk.node.client.blocking.event.BlockchainEventsService
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFactory
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeInfoService
 import com.wavesenterprise.sdk.node.client.blocking.pki.PkiService
@@ -32,7 +31,6 @@ class NodeServicesAutoConfigurationTest {
             .run { context ->
                 assertThat(context).hasSingleBean(AddressService::class.java)
                 assertThat(context).hasSingleBean(AliasService::class.java)
-                assertThat(context).hasSingleBean(BlockchainEventsService::class.java)
                 assertThat(context).hasSingleBean(BlocksService::class.java)
                 assertThat(context).hasSingleBean(ContractService::class.java)
                 assertThat(context).hasSingleBean(NodeInfoService::class.java)
@@ -50,7 +48,6 @@ class NodeServicesAutoConfigurationTest {
         fun nodeBlockingServiceFactory(): NodeBlockingServiceFactory = mockk<NodeBlockingServiceFactory>().also {
             every { it.addressService() } returns mockk()
             every { it.aliasService() } returns mockk()
-            every { it.blockchainEventsService() } returns mockk()
             every { it.blocksService() } returns mockk()
             every { it.contractService() } returns mockk()
             every { it.nodeInfoService() } returns mockk()

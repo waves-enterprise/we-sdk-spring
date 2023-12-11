@@ -165,7 +165,6 @@ class ContractBlockingClientFactoryConfigurationTest {
         val nodeBlockingServiceFactory: NodeBlockingServiceFactory = mockk<NodeBlockingServiceFactory>().also {
             every { it.addressService() } returns mockk()
             every { it.aliasService() } returns mockk()
-            every { it.blockchainEventsService() } returns mockk()
             every { it.blocksService() } returns mockk()
             every { it.contractService() } returns mockk()
             every { it.nodeInfoService() } returns mockk()
@@ -240,7 +239,6 @@ class ContractBlockingClientFactoryConfigurationTest {
         fun nodeBlockingServiceFactory(): NodeBlockingServiceFactory = mockk<NodeBlockingServiceFactory>().also {
             every { it.addressService() } returns mockk()
             every { it.aliasService() } returns mockk()
-            every { it.blockchainEventsService() } returns mockk()
             every { it.blocksService() } returns mockk()
             every { it.contractService() } returns mockk()
             every { it.nodeInfoService() } returns mockk()

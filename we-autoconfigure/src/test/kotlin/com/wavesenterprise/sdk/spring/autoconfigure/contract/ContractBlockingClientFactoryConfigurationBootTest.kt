@@ -5,7 +5,6 @@ import com.wavesenterprise.sdk.node.client.blocking.address.AddressService
 import com.wavesenterprise.sdk.node.client.blocking.alias.AliasService
 import com.wavesenterprise.sdk.node.client.blocking.blocks.BlocksService
 import com.wavesenterprise.sdk.node.client.blocking.contract.ContractService
-import com.wavesenterprise.sdk.node.client.blocking.event.BlockchainEventsService
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFactory
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeInfoService
 import com.wavesenterprise.sdk.node.client.blocking.pki.PkiService
@@ -149,7 +148,6 @@ class ContractBlockingClientFactoryConfigurationBootTest {
     class TestConfig {
         private val addressService: AddressService = mockk()
         private val aliasService: AliasService = mockk()
-        private val blockchainEventsService: BlockchainEventsService = mockk()
         private val blocksService: BlocksService = mockk()
         private val contractService: ContractService = mockk()
         private val nodeInfoService: NodeInfoService = mockk()
@@ -165,9 +163,6 @@ class ContractBlockingClientFactoryConfigurationBootTest {
 
         @Bean
         fun aliasService(): AliasService = aliasService
-
-        @Bean
-        fun blockchainEventsService(): BlockchainEventsService = blockchainEventsService
 
         @Bean
         fun blocksService(): BlocksService = blocksService
@@ -200,7 +195,6 @@ class ContractBlockingClientFactoryConfigurationBootTest {
         fun nodeBlockingServiceFactory(): NodeBlockingServiceFactory = mockk<NodeBlockingServiceFactory>().also {
             every { it.addressService() } returns addressService
             every { it.aliasService() } returns aliasService
-            every { it.blockchainEventsService() } returns blockchainEventsService
             every { it.blocksService() } returns blocksService
             every { it.contractService() } returns contractService
             every { it.nodeInfoService() } returns nodeInfoService

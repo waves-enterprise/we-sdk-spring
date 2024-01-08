@@ -15,6 +15,11 @@ class NodeServicesAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    fun aliasService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
+        nodeBlockingServiceFactory.aliasService()
+
+    @Bean
+    @ConditionalOnMissingBean
     fun blocksService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
         nodeBlockingServiceFactory.blocksService()
 
@@ -30,6 +35,16 @@ class NodeServicesAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    fun nodeUtilsService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
+        nodeBlockingServiceFactory.nodeUtilsService()
+
+    @Bean
+    @ConditionalOnMissingBean
+    fun pkiService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
+        nodeBlockingServiceFactory.pkiService()
+
+    @Bean
+    @ConditionalOnMissingBean
     fun privacyService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
         nodeBlockingServiceFactory.privacyService()
 
@@ -37,9 +52,4 @@ class NodeServicesAutoConfiguration {
     @ConditionalOnMissingBean
     fun txService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
         nodeBlockingServiceFactory.txService()
-
-    @Bean
-    @ConditionalOnMissingBean
-    fun nodeUtilsService(nodeBlockingServiceFactory: NodeBlockingServiceFactory) =
-        nodeBlockingServiceFactory.nodeUtilsService()
 }

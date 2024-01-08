@@ -2,10 +2,12 @@ package com.wavesenterprise.sdk.spring.autoconfigure.contract
 
 import com.wavesenterprise.sdk.contract.client.invocation.factory.ContractBlockingClientFactory
 import com.wavesenterprise.sdk.node.client.blocking.address.AddressService
+import com.wavesenterprise.sdk.node.client.blocking.alias.AliasService
 import com.wavesenterprise.sdk.node.client.blocking.blocks.BlocksService
 import com.wavesenterprise.sdk.node.client.blocking.contract.ContractService
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeBlockingServiceFactory
 import com.wavesenterprise.sdk.node.client.blocking.node.NodeInfoService
+import com.wavesenterprise.sdk.node.client.blocking.pki.PkiService
 import com.wavesenterprise.sdk.node.client.blocking.privacy.PrivacyService
 import com.wavesenterprise.sdk.node.client.blocking.tx.TxService
 import com.wavesenterprise.sdk.node.client.blocking.util.NodeUtilsService
@@ -144,24 +146,23 @@ class ContractBlockingClientFactoryConfigurationBootTest {
         ]
     )
     class TestConfig {
-        private val txService: TxService = mockk()
-        private val contractService: ContractService = mockk()
-        private val txSignerFactory: TxServiceTxSignerFactory = mockk()
-        private val txSigner: TxSigner = mockk()
         private val addressService: AddressService = mockk()
+        private val aliasService: AliasService = mockk()
         private val blocksService: BlocksService = mockk()
+        private val contractService: ContractService = mockk()
         private val nodeInfoService: NodeInfoService = mockk()
-        private val privacyService: PrivacyService = mockk()
         private val nodeUtilsService: NodeUtilsService = mockk()
-
-        @Bean
-        fun txSigner(): TxSigner = txSigner
-
-        @Bean
-        fun txService(): TxService = txService
+        private val pkiService: PkiService = mockk()
+        private val privacyService: PrivacyService = mockk()
+        private val txService: TxService = mockk()
+        private val txSigner: TxSigner = mockk()
+        private val txSignerFactory: TxServiceTxSignerFactory = mockk()
 
         @Bean
         fun addressService(): AddressService = addressService
+
+        @Bean
+        fun aliasService(): AliasService = aliasService
 
         @Bean
         fun blocksService(): BlocksService = blocksService
@@ -173,23 +174,34 @@ class ContractBlockingClientFactoryConfigurationBootTest {
         fun nodeInfoService(): NodeInfoService = nodeInfoService
 
         @Bean
+        fun nodeUtilsService(): NodeUtilsService = nodeUtilsService
+
+        @Bean
+        fun pkiService(): PkiService = pkiService
+
+        @Bean
         fun privacyService(): PrivacyService = privacyService
+
+        @Bean
+        fun txService(): TxService = txService
+
+        @Bean
+        fun txSigner(): TxSigner = txSigner
 
         @Bean
         fun txSignerFactory(): TxServiceTxSignerFactory = txSignerFactory
 
         @Bean
-        fun nodeUtilsService(): NodeUtilsService = nodeUtilsService
-
-        @Bean
         fun nodeBlockingServiceFactory(): NodeBlockingServiceFactory = mockk<NodeBlockingServiceFactory>().also {
-            every { it.txService() } returns txService
             every { it.addressService() } returns addressService
+            every { it.aliasService() } returns aliasService
             every { it.blocksService() } returns blocksService
             every { it.contractService() } returns contractService
             every { it.nodeInfoService() } returns nodeInfoService
-            every { it.privacyService() } returns privacyService
             every { it.nodeUtilsService() } returns nodeUtilsService
+            every { it.pkiService() } returns pkiService
+            every { it.privacyService() } returns privacyService
+            every { it.txService() } returns txService
         }
     }
 

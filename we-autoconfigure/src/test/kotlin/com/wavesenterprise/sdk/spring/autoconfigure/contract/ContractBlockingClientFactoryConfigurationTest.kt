@@ -163,12 +163,15 @@ class ContractBlockingClientFactoryConfigurationTest {
     class UserEnabledContractBeanInfoConfig {
 
         val nodeBlockingServiceFactory: NodeBlockingServiceFactory = mockk<NodeBlockingServiceFactory>().also {
-            every { it.txService() } returns mockk()
             every { it.addressService() } returns mockk()
+            every { it.aliasService() } returns mockk()
             every { it.blocksService() } returns mockk()
             every { it.contractService() } returns mockk()
             every { it.nodeInfoService() } returns mockk()
+            every { it.nodeUtilsService() } returns mockk()
+            every { it.pkiService() } returns mockk()
             every { it.privacyService() } returns mockk()
+            every { it.txService() } returns mockk()
         }
 
         val converterFactory: ConverterFactory = mockk<ConverterFactory>().also {
@@ -234,13 +237,15 @@ class ContractBlockingClientFactoryConfigurationTest {
 
         @Bean("customNodeBlockingServiceFactory")
         fun nodeBlockingServiceFactory(): NodeBlockingServiceFactory = mockk<NodeBlockingServiceFactory>().also {
-            every { it.txService() } returns mockk()
             every { it.addressService() } returns mockk()
+            every { it.aliasService() } returns mockk()
             every { it.blocksService() } returns mockk()
             every { it.contractService() } returns mockk()
             every { it.nodeInfoService() } returns mockk()
-            every { it.privacyService() } returns mockk()
             every { it.nodeUtilsService() } returns mockk()
+            every { it.pkiService() } returns mockk()
+            every { it.privacyService() } returns mockk()
+            every { it.txService() } returns mockk()
         }
     }
 

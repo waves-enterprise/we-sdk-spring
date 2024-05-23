@@ -3,7 +3,7 @@
 Java/Kotlin SDK starter with autoconfigurations for node and contract clients.
 Also contains autoconfigurations for signing SignRequests via tx-signer and logic for building atomics.
 
-## General
+## General.
 To start using the library, you need to add a dependency on starters needed for your project.  
 List of possible starters:
 * [we-starter-atomic](#we-starter-atomic)

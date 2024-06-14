@@ -1,5 +1,4 @@
 contracts:
-  is-enabled: false
   config:
     test-one:
       validation-enabled: false
@@ -18,5 +17,20 @@ contracts:
       version: 1
       image: test-two
       imageHash: test-two-image-hash
+
+node:
+  credentials-provider:
+    addresses:
+      3NqmRauaV87hhJPz1wzS6wx8kqWD5i7coCM: password
+      3NqNVU8XpEWLR86zvGAyZ6QL4xSse1EDb7K: password
+      3NoqQ88SuVBYuUimRWp3zeKLAYT66xLn5s3: password
+  config:
+    node-0:
+      http:
+        xApiKey: xApiKey
+        xPrivacyApiKey: xPrivacyApiKey
+        url: https://localhost.com
+        loggerLevel: FULL
+        read-timeout: 30000
 
 debug: true

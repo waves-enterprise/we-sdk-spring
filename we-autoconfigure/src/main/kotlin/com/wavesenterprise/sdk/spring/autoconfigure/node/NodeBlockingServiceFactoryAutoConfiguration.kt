@@ -21,8 +21,8 @@ import com.wavesenterprise.sdk.spring.autoconfigure.node.holder.NodeBlockingServ
 import com.wavesenterprise.sdk.spring.autoconfigure.node.holder.NodeClient
 import com.wavesenterprise.sdk.spring.autoconfigure.node.legacy.LegacyNodeConfiguration
 import com.wavesenterprise.sdk.spring.autoconfigure.node.properties.CacheProperties
+import com.wavesenterprise.sdk.spring.autoconfigure.node.properties.NodeConfiguration
 import com.wavesenterprise.sdk.spring.autoconfigure.node.properties.NodeProperties
-import com.wavesenterprise.sdk.spring.autoconfigure.node.properties.NodePropertiesConfiguration
 import com.wavesenterprise.sdk.spring.autoconfigure.node.properties.RateLimiterProperties
 import com.wavesenterprise.sdk.spring.autoconfigure.node.service.NodeServicesAutoConfiguration
 import org.springframework.boot.autoconfigure.AutoConfigureBefore
@@ -40,8 +40,7 @@ import org.springframework.context.annotation.Import
 )
 @Import(
     LegacyNodeConfiguration::class,
-    NodePropertiesConfiguration::class,
-    NodeCredentialsProviderConfiguration::class,
+    NodeConfiguration::class,
 )
 @ConditionalOnClass(
     NodeBlockingServiceFactory::class,

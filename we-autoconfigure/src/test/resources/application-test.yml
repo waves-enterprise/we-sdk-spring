@@ -18,8 +18,5 @@ contracts:
       version: 1
       image: test-two
       imageHash: test-two-image-hash
-      autoUpdate:
-        enabled: false
-        contractCreatorAddress: 4L4XEpNpesX9r6rVJ8hW1TrMiNCZ6SMvRuWPKB7T47wKfnp4D84XBUv7xsa36CGwoyK3fzfojivwonHNrsX2fLBL
 
 debug: true
